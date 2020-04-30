@@ -15,6 +15,22 @@ module.exports = {
   },
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off"
-  }
+    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    'no-var': 'error',
+    '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+    indent: ['error', 4, { 'SwitchCase': 1 }],
+    'linebreak-style': ['error', 'unix'],
+    quotes: ['error', 'single'],
+    semi: ['error', 'always'],
+    eqeqeq: ['error', 'smart'],
+    'no-eq-null': 0,
+    'no-param-reassign': 0,
+    '@typescript-eslint/no-explicit-any': 0,
+    '@typescript-eslint/no-unused-vars': 0,
+    '@typescript-eslint/camelcase': 0,
+    '@typescript-eslint/no-this-alias': 0,
+    '@typescript-eslint/no-empty-function': 0,
+    '@typescript-eslint/no-empty-interface': 0,
+    'no-empty': 0
+}
 };
