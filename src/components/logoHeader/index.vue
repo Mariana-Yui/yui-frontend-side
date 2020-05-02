@@ -1,0 +1,32 @@
+<template>
+    <div class="logo-header">
+        <div class="logo"></div>
+    </div>
+</template>
+
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component
+export default class LogoHeader extends Vue {}
+</script>
+<style lang="scss" scoped>
+@import '~@/assets/css/default.scss';
+@import '~@/assets/css/mixin.scss';
+
+.logo-header {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    background-color: $white;
+    .logo {
+        @include center();
+        width: 40%;
+        height: 120%;
+        background-image: url('~@/assets/img/logo.png');
+        background-size: cover;
+        background-position-x: 50%;
+        background-repeat: no-repeat;
+    }
+}
+</style>

@@ -1,0 +1,11 @@
+@import './reset.scss';
+@import './default.scss';
+@import './font.scss';
+@import './mixin.scss';
+
+html,
+body {
+    background-color: $defaultBg;
+    color: $gray;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
