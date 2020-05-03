@@ -29,11 +29,24 @@ export class Request {
             (error: AxiosError) => {
                 if (error.response && error.response.status === 401) {
                     utils.removeItem('_id', 'userInfo', 'token');
-                    router.replace({ path: '/login' });
+                    router.replace({ path: '/login', query: { redirect: error.config.url } });
                 }
                 return Promise.reject(error);
             }
         );
+    }
+    /********************************ALL********************************************/
+    // 轮播图
+    public async getBannerInfo() {
+        const { data } = await this.instance.get('/app/all/getBannerInfo', {
+            params: { noauth: 1 }
+        });
+        return data;
+    }
+    /********************************ME********************************************/
+    public async testToken(username?: string, password?: string) {
+        const { data } = await this.instance.post('/app/me/loginStatus', { username, password });
+        return data;
     }
 }
 

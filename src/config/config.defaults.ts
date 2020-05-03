@@ -1,3 +1,3 @@
 export default {
-    baseUrl: 'http://127.0.0.1:7001'
+    baseUrl: 'http://192.168.1.106:7001'
 };

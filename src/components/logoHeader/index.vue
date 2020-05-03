@@ -15,7 +15,10 @@ export default class LogoHeader extends Vue {}
 @import '~@/assets/css/mixin.scss';
 
 .logo-header {
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99999;
     width: 100%;
     height: 40px;
     background-color: $white;

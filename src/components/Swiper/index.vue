@@ -1,6 +1,6 @@
 <template>
-    <swiper class="img-swiper" :options="swiperOptions">
-        <swiper-slide v-for="(img, idx) of imgList" :key="img.id" @click="idx">
+    <swiper class="img-swiper" :options="swiperOptions" v-if="imgList && imgList.length > 0">
+        <swiper-slide v-for="img in imgList" :key="img.id" @click="handleClickBanner">
             <img class="article-banner-img" :src="img.src" alt="banner" />
         </swiper-slide>
         <div class="swiper-pagination" slot="pagination"></div>
@@ -18,8 +18,9 @@ import 'swiper/css/swiper.css';
         SwiperSlide
     }
 })
-export default class App extends Vue {
+export default class VueSwiper extends Vue {
     private swiperOptions = {
+        loop: true,
         pagination: {
             el: '.swiper-pagination',
             dynamicBullets: true
@@ -27,7 +28,35 @@ export default class App extends Vue {
     };
     private imgList: Array<{ src: string; id: string; [props: string]: any }> = [];
 
-    public created() {}
+    public async created() {
+        try {
+            const { code, message, info } = await this.$axios.getBannerInfo();
+            if (code === 0) {
+                this.imgList = info;
+                return;
+            }
+            throw Error(message);
+        } catch (error) {
+            console.log(error);
+            this.$toast(error.message);
+        }
+    }
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@import '~@/assets/css/default.scss';
+
+.img-swiper {
+    width: 100%;
+    .article-banner-img {
+        width: 100%;
+        height: calc(375px / 2);
+    }
+    .swiper-pagination {
+        ::v-deep .swiper-pagination-bullet-active {
+            background-color: $white;
+            opacity: 0.7;
+        }
+    }
+}
+</style>

@@ -5,6 +5,7 @@ import Home from '../views/Home.vue';
 const All = () => import('@/pages/all/index.vue');
 const Yui = () => import('@/pages/yui/index.vue');
 const Me = () => import('@/pages/me/index.vue');
+const NotFound = () => import('@/pages/404/index.vue');
 
 Vue.use(VueRouter);
 
@@ -30,9 +31,17 @@ const routes: Array<RouteConfig> = [
             {
                 path: '/me',
                 name: 'Me',
-                component: Me
+                component: Me,
+                meta: {
+                    requireAuth: true
+                }
             }
         ]
+    },
+    {
+        path: '*',
+        name: '404',
+        component: NotFound
     }
 ];
 
