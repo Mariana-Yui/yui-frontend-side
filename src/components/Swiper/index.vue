@@ -21,6 +21,8 @@ import 'swiper/css/swiper.css';
 export default class VueSwiper extends Vue {
     private swiperOptions = {
         loop: true,
+        autoplay: true,
+        delay: 5000,
         pagination: {
             el: '.swiper-pagination',
             dynamicBullets: true
@@ -38,7 +40,7 @@ export default class VueSwiper extends Vue {
             throw Error(message);
         } catch (error) {
             console.log(error);
-            this.$toast(error.message);
+            this.$toast(error.message, 'error');
         }
     }
 }

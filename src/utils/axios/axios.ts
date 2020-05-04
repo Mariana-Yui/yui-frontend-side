@@ -43,6 +43,13 @@ export class Request {
         });
         return data;
     }
+    // top view
+    public async getTopViewArticles() {
+        const { data } = await this.instance.get('/app/all/getTopViewArticles', {
+            params: { noauth: 1 }
+        });
+        return data;
+    }
     /********************************ME********************************************/
     public async testToken(username?: string, password?: string) {
         const { data } = await this.instance.post('/app/me/loginStatus', { username, password });

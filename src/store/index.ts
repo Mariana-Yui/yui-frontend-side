@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import user from './module/user';
+import music from './module/music';
+import article from './module/article';
+import loading from './module/loading';
 
 Vue.use(Vuex);
 
@@ -9,6 +12,9 @@ export default new Vuex.Store({
     mutations: {},
     actions: {},
     modules: {
-        user
+        user,
+        music,
+        article,
+        loading
     }
 });
