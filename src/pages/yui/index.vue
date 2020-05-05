@@ -1,30 +1,74 @@
 <template>
     <div id="yui">
         <logo-header></logo-header>
-        <template v-for="article in newAriticle">
-            <article-block-two :article="article" :key="article._id"></article-block-two>
-        </template>
+        <vue-scroller
+            ref="vue-scroller"
+            @refresh="handleRefresh"
+            @infinite="handleInfinite"
+            class="content-scroller"
+        >
+            <template v-for="article in newArticle">
+                <article-block-two
+                    :article="article"
+                    :key="article._id"
+                    class="article-block"
+                ></article-block-two>
+            </template>
+        </vue-scroller>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import StoreMixin from '@/components/mixin/store-mixin';
 import LogoHeader from '@/components/logoHeader/index.vue';
 import ArticleBlockTwo from '@/components/articleBlock/block2.vue';
+import VueScroller from '@/components/scroller/index.vue';
+import { GET_ARTICLE_REGULARLY_ASYNC } from '@/store/types';
 
 @Component({
     components: {
         LogoHeader,
-        ArticleBlockTwo
-    }
+        ArticleBlockTwo,
+        VueScroller
+    },
+    mixins: [StoreMixin]
 })
-export default class YUI extends Vue {}
+export default class YUI extends Vue {
+    private scroller: any = {};
+    private noMore = false;
+
+    get newArticle() {
+        return this.article_m ? this.article_m.articles : [];
+    }
+
+    // public async created() {}
+    public mounted() {
+        this.$nextTick(() => {
+            this.scroller = (this.$refs['vue-scroller'] as Vue).$refs['scroller'] as any;
+        });
+    }
+    public handleRefresh() {
+        setTimeout(() => {
+            this.scroller.finishPullToRefresh();
+        }, 1500);
+    }
+    public async handleInfinite() {
+        if (!this.noMore) {
+            this.noMore = await this.article_m[GET_ARTICLE_REGULARLY_ASYNC]();
+            this.scroller.finishInfinite(this.noMore);
+        }
+    }
+}
 </script>
 <style lang="scss" scoped>
 #yui {
     margin: 0 0 60px;
-    .content-wrapper {
+    .content-scroller {
         padding-top: 40px;
+        .article-block {
+            height: 400px;
+        }
     }
 }
 </style>

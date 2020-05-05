@@ -25,7 +25,7 @@
                     :type="top.type"
                     :views="top.views"
                     :title="top.title"
-                    @click="handleGotoArticlePage(top._id, top.type)"
+                    @click="handleGotoArticlePage(top._id)"
                 >
                     <template v-slot:cover>
                         <div class="read-cover" v-if="top.type === 'read'">
@@ -48,7 +48,7 @@
                         <div class="music-cover" v-if="top.type === 'music'">
                             <img :src="top.cover_img" alt="" />
                             <div class="mask">
-                                <i class="iconfont">{{ music.play ? '&#xe6a5;' : '&#xe6a4;' }}</i>
+                                <i class="iconfont">{{ music_m.play ? '&#xe6a5;' : '&#xe6a4;' }}</i>
                             </div>
                         </div>
                         <div class="broadcast-cover" v-if="top.type === 'broadcast'">
@@ -118,8 +118,8 @@ export default class ALL extends Vue {
             this.$toast(error.message, 'error');
         }
     }
-    public handleGotoArticlePage(id: string, type: string) {
-        this.$router.push({ path: '/article', query: { id, type } });
+    public handleGotoArticlePage(id: string) {
+        this.$router.push({ path: '/article', query: { id } });
     }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <swiper class="img-swiper" :options="swiperOptions" v-if="imgList && imgList.length > 0">
-        <swiper-slide v-for="img in imgList" :key="img.id" @click="handleClickBanner">
+        <swiper-slide v-for="img in imgList" :key="img.id" @click="handleClickBanner(img.id)">
             <img class="article-banner-img" :src="img.src" alt="banner" />
         </swiper-slide>
         <div class="swiper-pagination" slot="pagination"></div>
@@ -42,6 +42,9 @@ export default class VueSwiper extends Vue {
             console.log(error);
             this.$toast(error.message, 'error');
         }
+    }
+    public handleClickBanner(id: string) {
+        this.$router.push({ path: '/article', query: { id } });
     }
 }
 </script>

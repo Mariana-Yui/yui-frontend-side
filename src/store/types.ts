@@ -10,5 +10,9 @@ export const TRUSIFY_MUSIC_LOAD_STATUS = 'trusifyMusicLoadStatus';
 export const CHANGE_CURRENT_MUSIC_SOURCE = 'changeCurrentMusicSrc';
 // article
 export const CHANGE_CURRENT_ARTICLE_TYPE = 'changeCurArticleType';
+export const GET_ARTICLE_REGULARLY_ASYNC = 'getArticleRegularly';
+export const GET_LATEST_ARTICLE_ASYNC = 'getLatestArticle';
+export const PUSH_ARTICLE = 'pushArticle';
+export const UNSHIFT_ARTICLE = 'unshiftArticle';
 // loading
-export const TOGGLE_LOADING_ANIMATION = 'showLoadingAnimation';
+export const TOGGLE_LOADING_ANIMATION = 'toggleLoadingAnimation';

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import { focus } from 'vue-focus';
+import VueScroller from 'vue-scroller';
 import App from './App.vue';
 import './registerServiceWorker';
 import router from './router/permission';
@@ -15,7 +16,8 @@ Vue.config.productionTip = false;
 Vue.directive('focus', focus);
 Vue.use(axios)
     .use(util)
-    .use(toast);
+    .use(toast)
+    .use(VueScroller);
 
 new Vue({
     router,

@@ -50,6 +50,14 @@ export class Request {
         });
         return data;
     }
+    /********************************YUI********************************************/
+    public async getArticleRegular(suffix: Date | undefined) {
+        const { data } = await this.instance.post('/app/yui/getArticleRegular', {
+            noauth: 1,
+            suffix
+        });
+        return data;
+    }
     /********************************ME********************************************/
     public async testToken(username?: string, password?: string) {
         const { data } = await this.instance.post('/app/me/loginStatus', { username, password });
