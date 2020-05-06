@@ -29,7 +29,7 @@ export class Request {
             (error: AxiosError) => {
                 if (error.response && error.response.status === 401) {
                     utils.removeItem('_id', 'userInfo', 'token');
-                    router.replace({ path: '/login', query: { redirect: error.config.url } });
+                    router.replace({ path: '/guide', query: { redirect: error.config.url } });
                 }
                 return Promise.reject(error);
             }
@@ -55,6 +55,13 @@ export class Request {
         const { data } = await this.instance.post('/app/yui/getArticleRegular', {
             noauth: 1,
             suffix
+        });
+        return data;
+    }
+    public async getLatestArticle(prefix: Date) {
+        const { data } = await this.instance.post('/app/yui/getLatestArticle', {
+            noauth: 1,
+            prefix
         });
         return data;
     }

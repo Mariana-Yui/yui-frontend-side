@@ -13,10 +13,10 @@ router.beforeEach(async (to, from, next) => {
                 next();
             } catch (error) {
                 console.log(error);
-                next({ path: '/login', replace: true });
+                next({ path: '/guide', replace: true });
             }
         } else {
-            next({ path: '/login', replace: true });
+            next({ path: '/guide', replace: true });
         }
     } else {
         next();

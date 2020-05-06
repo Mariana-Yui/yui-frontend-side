@@ -1,5 +1,11 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
-import { CHANGE_CURRENT_ARTICLE_TYPE, PUSH_ARTICLE, GET_ARTICLE_REGULARLY_ASYNC } from '../types';
+import {
+    CHANGE_CURRENT_ARTICLE_TYPE,
+    PUSH_ARTICLE,
+    GET_ARTICLE_REGULARLY_ASYNC,
+    GET_LATEST_ARTICLE_ASYNC,
+    UNSHIFT_ARTICLE
+} from '../types';
 import request from '@/utils/axios/axios';
 
 interface Article {
@@ -27,6 +33,19 @@ export default class ArticleModule extends VuexModule {
         if (articles.length > 0) {
             this.articles = this.articles.concat(articles);
         }
+    }
+    @Action
+    public async [GET_LATEST_ARTICLE_ASYNC]() {
+        if (this.articles.length === 0) {
+            return;
+        }
+        const prefix = this.articles[0].publish_time;
+        const { code, message, info } = await request.getLatestArticle(prefix);
+        if (code === 0) {
+            this.context.commit(UNSHIFT_ARTICLE, info);
+            return;
+        }
+        throw Error(message);
     }
     @Action
     public async [GET_ARTICLE_REGULARLY_ASYNC]() {

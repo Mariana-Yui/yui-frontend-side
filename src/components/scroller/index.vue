@@ -11,9 +11,9 @@
         <template v-slot:default>
             <slot></slot>
         </template>
-        <!-- <template v-slot:infinite-spinner>
+        <template v-slot:infinite-spinner>
             <loading-wave></loading-wave>
-        </template> -->
+        </template>
     </scroller>
 </template>
 

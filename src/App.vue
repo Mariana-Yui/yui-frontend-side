@@ -35,8 +35,13 @@ export default class ReadApp extends Vue {
 }
 .slide-fade-enter,
 .slide-fade-leave-to {
-    transform: translateX(-100%);
     opacity: 0.3;
+}
+.slide-fade-enter {
+    transform: translateX(100%);
+}
+.slide-fade-leave-to {
+    transform: translateX(-100%);
 }
 .fade-out-leave-active {
     transition: opacity 0.3s ease;

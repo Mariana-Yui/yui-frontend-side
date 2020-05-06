@@ -8,11 +8,7 @@
             class="content-scroller"
         >
             <template v-for="article in newArticle">
-                <article-block-two
-                    :article="article"
-                    :key="article._id"
-                    class="article-block"
-                ></article-block-two>
+                <article-block-two :article="article" :key="article._id"></article-block-two>
             </template>
         </vue-scroller>
     </div>
@@ -24,7 +20,7 @@ import StoreMixin from '@/components/mixin/store-mixin';
 import LogoHeader from '@/components/logoHeader/index.vue';
 import ArticleBlockTwo from '@/components/articleBlock/block2.vue';
 import VueScroller from '@/components/scroller/index.vue';
-import { GET_ARTICLE_REGULARLY_ASYNC } from '@/store/types';
+import { GET_ARTICLE_REGULARLY_ASYNC, GET_LATEST_ARTICLE_ASYNC } from '@/store/types';
 
 @Component({
     components: {
@@ -48,16 +44,19 @@ export default class YUI extends Vue {
             this.scroller = (this.$refs['vue-scroller'] as Vue).$refs['scroller'] as any;
         });
     }
-    public handleRefresh() {
-        setTimeout(() => {
+    public async handleRefresh() {
+        setTimeout(async () => {
+            await this.article_m[GET_LATEST_ARTICLE_ASYNC]();
             this.scroller.finishPullToRefresh();
-        }, 1500);
+        }, 1000);
     }
     public async handleInfinite() {
-        if (!this.noMore) {
-            this.noMore = await this.article_m[GET_ARTICLE_REGULARLY_ASYNC]();
-            this.scroller.finishInfinite(this.noMore);
-        }
+        setTimeout(async () => {
+            if (!this.noMore) {
+                this.noMore = await this.article_m[GET_ARTICLE_REGULARLY_ASYNC]();
+                this.scroller.finishInfinite(this.noMore);
+            }
+        }, 1000);
     }
 }
 </script>
@@ -66,9 +65,6 @@ export default class YUI extends Vue {
     margin: 0 0 60px;
     .content-scroller {
         padding-top: 40px;
-        .article-block {
-            height: 400px;
-        }
     }
 }
 </style>

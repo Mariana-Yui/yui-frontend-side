@@ -25,9 +25,9 @@ export default class LogoHeader extends Vue {}
     .logo {
         @include center();
         width: 40%;
-        height: 120%;
+        height: 40px;
         background-image: url('~@/assets/img/logo.png');
-        background-size: cover;
+        background-size: contain;
         background-position-x: 50%;
         background-repeat: no-repeat;
     }
