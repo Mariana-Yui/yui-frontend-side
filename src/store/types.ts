@@ -1,6 +1,7 @@
 //user
 export const LOGOUT = 'logout';
 export const LOGIN = 'login';
+export const WRITE_INFO_INTO_LOCAL = 'writeUserInfoIntoLocal';
 export const GET_LOGIN_STATUS = 'getLoginStatus';
 // music
 export const PLAY_MUSIC = 'playMusic';

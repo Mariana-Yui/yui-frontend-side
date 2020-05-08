@@ -27,9 +27,5 @@ export default class StoreMixin extends Vue {
         this.user_m = getModule(UserModule, this.$store);
         this.article_m = getModule(ArticleModule, this.$store);
         this.loading_m = getModule(LoadingModule, this.$store);
-        this.loading_m[TOGGLE_LOADING_ANIMATION]();
-    }
-    public mounted() {
-        this.loading_m[TOGGLE_LOADING_ANIMATION]();
     }
 }

@@ -65,22 +65,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Mixins } from 'vue-property-decorator';
 import LogoHeader from '@/components/logoHeader/index.vue';
 import VueSwiper from '@/components/Swiper/index.vue';
 import ArticleBlockOne from '@/components/articleBlock/block1.vue';
 import StoreMixin from '@/components/mixin/store-mixin';
-import { CHANGE_CURRENT_ARTICLE_TYPE } from '../../store/types';
 
 @Component({
     components: {
         LogoHeader,
         VueSwiper,
         ArticleBlockOne
-    },
-    mixins: [StoreMixin]
+    }
 })
-export default class ALL extends Vue {
+export default class ALL extends Mixins(StoreMixin) {
     private arts = [
         {
             type: 'read',

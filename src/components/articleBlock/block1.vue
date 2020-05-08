@@ -55,7 +55,8 @@ export default class ArticleBlockOne extends Vue {
     .article-title {
         width: 80%;
         padding-bottom: 10px;
-        font-size: $more-larger-fontsize;
+        font-size: $normal-fontsize;
+        font-weight: normal;
         color: $black;
         opacity: 0.8;
         @include addEllipsis();

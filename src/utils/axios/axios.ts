@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import CryptoJS from 'crypto-js';
 import config from '@/config/config.defaults';
 import utils from '../util/util';
 import router from '@/router/permission';
@@ -65,9 +66,54 @@ export class Request {
         });
         return data;
     }
-    /********************************ME********************************************/
-    public async testToken(username?: string, password?: string) {
-        const { data } = await this.instance.post('/app/me/loginStatus', { username, password });
+    /********************************SPACE/ME********************************************/
+    public async getToken(email?: string, password?: string) {
+        const { data } = await this.instance.post('/app/me/login', {
+            email,
+            password: password ? CryptoJS.MD5(password, config.secret_key).toString() : undefined
+        });
+        return data;
+    }
+    public async getUserDetails(id: string) {
+        const { data } = await this.instance.post('/app/space/getUserDetails', {
+            id,
+            noauth: 1
+        });
+        return data;
+    }
+    public async checkSubscribe(id: string, following: string) {
+        const { data } = await this.instance.get('/app/space/checkSubscribe', {
+            params: {
+                id,
+                following,
+                noauth: 1
+            }
+        });
+        return data;
+    }
+    /********************************COLLECTION********************************************/
+    public async getTypedArticleCollection(type: string, id: string) {
+        const { data } = await this.instance.post('/app/collection/getTypedArticleCollection', {
+            type,
+            id,
+            noauth: 1
+        });
+        return data;
+    }
+    public async collectArticle(id: string, article_id: string, type: string) {
+        const { data } = await this.instance.post('/app/collection/collectArticle', {
+            id,
+            article_id,
+            type
+        });
+        return data;
+    }
+    public async removeCollectArticle(id: string, article_id: string, type: string) {
+        const { data } = await this.instance.post('/app/collection/removeCollectArticle', {
+            id,
+            article_id,
+            type
+        });
         return data;
     }
 }

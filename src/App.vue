@@ -1,9 +1,10 @@
 <template>
     <div id="app">
         <transition name="slide-fade">
-            <keep-alive>
+            <keep-alive v-if="$route.meta.exclude">
                 <router-view></router-view>
             </keep-alive>
+            <router-view v-else></router-view>
         </transition>
         <transition name="fade-out">
             <loading v-show="showLoading"></loading>
@@ -15,6 +16,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Loading from '@/components/loading/index.vue';
 import StoreMixin from '@/components/mixin/store-mixin';
+import { TOGGLE_LOADING_ANIMATION } from './store/types';
 
 @Component({
     components: {
@@ -25,6 +27,14 @@ import StoreMixin from '@/components/mixin/store-mixin';
 export default class ReadApp extends Vue {
     get showLoading() {
         return this.loading_m ? this.loading_m.show : false;
+    }
+    public created() {
+        this.loading_m[TOGGLE_LOADING_ANIMATION]();
+    }
+    public mounted() {
+        this.$nextTick(() => {
+            this.loading_m[TOGGLE_LOADING_ANIMATION]();
+        });
     }
 }
 </script>

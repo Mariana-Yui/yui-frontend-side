@@ -21,7 +21,7 @@ export default class Loading extends Vue {}
 .loading-wrapper {
     @include forcedCenter();
     z-index: 999999;
-    background-color: $defaultBg;
+    background-color: transparent;
     --sk-size: 50px;
     --sk-color-one: #c4b2f5;
     --sk-color-two: #f8c600;

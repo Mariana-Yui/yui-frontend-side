@@ -34,6 +34,10 @@ export default class ArticleModule extends VuexModule {
             this.articles = this.articles.concat(articles);
         }
     }
+    @Mutation
+    public [UNSHIFT_ARTICLE](articles: Array<Article>) {
+        this.articles = articles.concat(this.articles);
+    }
     @Action
     public async [GET_LATEST_ARTICLE_ASYNC]() {
         if (this.articles.length === 0) {

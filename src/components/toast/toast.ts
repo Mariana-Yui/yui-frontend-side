@@ -13,7 +13,7 @@ const instanceFactory = () => {
     return toast;
 };
 
-const ToastFactory = (content: string, type = 'info', duration = 15555500) => {
+const ToastFactory = (content: string, type = 'info', duration = 1500) => {
     // debounce
     if (!showing) {
         showing = true;

@@ -4,9 +4,10 @@ import Home from '../views/Home.vue';
 
 const All = () => import('@/pages/all/index.vue');
 const Yui = () => import('@/pages/yui/index.vue');
-const Me = () => import('@/pages/me/index.vue');
 const Guide = () => import('@/pages/login/guide.vue');
 const Login = () => import('@/pages/login/index.vue');
+const UserSpace = () => import('@/pages/space/index.vue');
+const Collection = () => import('@/pages/space/collection.vue');
 const NotFound = () => import('@/pages/404/index.vue');
 
 Vue.use(VueRouter);
@@ -33,7 +34,7 @@ const routes: Array<RouteConfig> = [
             {
                 path: '/me',
                 name: 'Me',
-                component: Me,
+                component: UserSpace,
                 meta: {
                     requireAuth: true
                 }
@@ -49,6 +50,19 @@ const routes: Array<RouteConfig> = [
         path: '/login',
         name: 'Login',
         component: Login
+    },
+    {
+        path: '/space/:id',
+        name: 'UserSpace',
+        component: UserSpace
+    },
+    {
+        path: '/collection/:id',
+        name: 'SpaceCollection',
+        component: Collection,
+        meta: {
+            exclude: true
+        }
     },
     {
         path: '*',

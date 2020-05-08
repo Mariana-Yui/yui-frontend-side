@@ -11,7 +11,7 @@
                     name="email"
                     placeholder="请输入邮箱"
                     @focus="focusOnRendered = true"
-                    @blur="validateEmail"
+                    @input="validateEmail"
                 />
             </div>
             <div class="email-warn">{{ emailWarn }}</div>
@@ -23,7 +23,7 @@
                     id="password"
                     name="email"
                     placeholder="请输入密码"
-                    @blur="validatePassword"
+                    @input="validatePassword"
                 />
             </div>
             <div class="password-warn">{{ passwordWarn }}</div>
@@ -31,9 +31,12 @@
                 ref="login-btn"
                 class="login-button"
                 :class="{ active: isPass }"
-                @click="handleTouchButton"
+                @touchstart="handleTouchButton"
+                @touchend="handleTouchEndButton"
+                @animationend="handleEndAnimation"
             >
-                登录
+                <span>登录</span>
+                <div class="wave" ref="wave"></div>
             </div>
             <div class="bottom-help">
                 <div class="register">注册</div>
@@ -44,46 +47,40 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Mixins } from 'vue-property-decorator';
 import LoginBg from './loginBg.vue';
+import LoginMixin from '@/components/mixin/login-mixin';
+import StoreMixin from '@/components/mixin/store-mixin';
+import { LOGIN } from '@/store/types';
 
 @Component({
     components: {
         LoginBg
     }
 })
-export default class Login extends Vue {
-    private focusOnRendered = true;
-    private email = '';
-    private password = '';
-    private isPass = false;
-    private emailWarn = '';
-    private passwordWarn = '';
-
-    public validateEmail() {
-        if (!this.$rule.email.pattern.test(this.email)) {
-            this.emailWarn = this.$rule.email.message;
-        } else {
-            this.emailWarn = '';
+export default class Login extends Mixins(LoginMixin, StoreMixin) {
+    public async handleTouchEndButton() {
+        if (this.isPass) {
+            try {
+                const { code, message } = await this.user_m[LOGIN]({
+                    email: this.email,
+                    password: this.password
+                });
+                if (code === 0) {
+                    this.$router.push('/me');
+                    return;
+                }
+                throw Error(message);
+            } catch (error) {
+                this.$toast(error.message, 'error');
+            }
         }
-        this.focusOnRendered = false;
-    }
-    public validatePassword() {
-        if (!this.$rule.password.pattern.test(this.password)) {
-            this.passwordWarn = this.$rule.password.message;
-        } else {
-            this.passwordWarn = '';
-        }
-    }
-    public handleTouchButton() {
-        ((this.$refs['login-btn'] as Vue).$el.querySelector(
-            ':after'
-        ) as HTMLElement).style.animation = '';
     }
 }
 </script>
 <style lang="scss" scoped>
 @import '~@/assets/css/default.scss';
+@import '~@/assets/css/mixin.scss';
 
 .login-form-wrapper {
     margin: 0 50px;
@@ -107,9 +104,6 @@ export default class Login extends Vue {
             outline-style: none;
         }
     }
-    .password {
-        margin-bottom: 20px;
-    }
     [class$='warn'] {
         height: 15px;
         line-height: 15px;
@@ -117,17 +111,28 @@ export default class Login extends Vue {
         color: rgba(255, 0, 0, 0.7);
     }
     .login-button {
-        margin: 0 30px 12px;
+        position: relative;
+        margin: 20px 30px 12px;
         padding: 10px 0;
         font-size: $smaller-fontsize;
         font-weight: bold;
         text-align: center;
         color: $white;
         border-radius: 5px;
-        background-color: $black;
-        opacity: 0.15;
+        background-color: $light-gray;
+        overflow: hidden;
         &.active {
-            opacity: 0.7;
+            background-color: $black;
+        }
+        .wave {
+            @include equalWidthHeightFather();
+            position: absolute;
+            background: transparent;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            animation-fill-mode: forwards;
+            transform: translate(-50%, -50%);
         }
     }
     .bottom-help {

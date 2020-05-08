@@ -1,20 +1,41 @@
 import { VuexModule, Mutation, Action, Module } from 'vuex-module-decorators';
-import { GET_LOGIN_STATUS } from '../types';
+import { GET_LOGIN_STATUS, WRITE_INFO_INTO_LOCAL, LOGIN } from '../types';
+import request from '@/utils/axios/axios';
+import utils from '@/utils/util/util';
 
+interface User {
+    _id: string;
+    token: string;
+}
 @Module({
     name: 'user',
     namespaced: true
 })
 export default class UserModule extends VuexModule {
     _id = '';
-    userInfo: any = {};
     token = '';
+    // 不再将userInfo写入vuex和localStorage, 不合理且操作逻辑也复杂
 
-    @Mutation
-    public [GET_LOGIN_STATUS]() {
-        if (this._id && this.userInfo.length > 0 && this.token) {
+    get loginStatus() {
+        if ((this._id || utils.getItem('_id')) && (this.token || utils.getItem('token'))) {
             return true;
         }
         return false;
+    }
+    @Mutation
+    public [WRITE_INFO_INTO_LOCAL](info: User) {
+        const { _id, token } = info;
+        this._id = _id;
+        this.token = token;
+        utils.setItem({ _id, token });
+    }
+    @Action
+    public async [LOGIN](account: { email: string; password: string }) {
+        const { email, password } = account;
+        const { code, message, info } = await request.getToken(email, password);
+        if (code === 0) {
+            this.context.commit(WRITE_INFO_INTO_LOCAL, info);
+        }
+        return { code, message };
     }
 }

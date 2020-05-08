@@ -6,6 +6,18 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0" />
         <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
         <title><%= htmlWebpackPlugin.options.title %></title>
+        <style>
+            @keyframes wave {
+                from {
+                    transform: translate(-50%, -50%) scale(0);
+                    background: #606266;
+                }
+                to {
+                    transform: translate(-50%, -50%) scale(1);
+                    background: transparent;
+                }
+            }
+        </style>
     </head>
     <body>
         <noscript>
