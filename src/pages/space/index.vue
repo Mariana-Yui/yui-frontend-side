@@ -1,7 +1,7 @@
 <template>
     <div class="user-space-wrapper">
         <common-header v-if="!self" :title="userInfo.username"></common-header>
-        <i v-else class="iconfont user-profile-icon">&#xe68c;</i>
+        <i v-else class="iconfont user-profile-icon" @click="handleGotoProfile">&#xe68c;</i>
         <div
             class="user-profile"
             :class="{ 'add-padding-top': !self }"
@@ -158,6 +158,9 @@ export default class UserSpace extends Mixins(StoreMixin) {
     public handleGotoCollectionPage(type: string) {
         this.$router.push({ path: `/collection/${this._id}`, query: { type } });
     }
+    public handleGotoProfile() {
+        this.$router.push({ path: '/profile', query: { redirect: 'me' } });
+    }
 }
 </script>
 <style lang="scss" scoped>
@@ -171,6 +174,7 @@ export default class UserSpace extends Mixins(StoreMixin) {
         position: absolute;
         left: 0;
         top: 0;
+        z-index: 99999;
         color: $white;
         line-height: 40px;
         text-align: center;

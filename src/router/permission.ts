@@ -10,7 +10,7 @@ router.beforeEach(async (to, from, next) => {
         if (token != null) {
             if (from.path !== '/login') {
                 try {
-                    const { code, message } = await request.getToken();
+                    const data = await request.getToken();
                     next();
                 } catch (error) {
                     console.log(error);
@@ -26,7 +26,7 @@ router.beforeEach(async (to, from, next) => {
         if (to.path === '/guide') {
             if (token != null) {
                 try {
-                    const { code, message } = await request.getToken();
+                    const data = await request.getToken();
                     next({ path: '/me', replace: true });
                 } catch (error) {
                     console.log(error);

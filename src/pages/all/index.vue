@@ -25,6 +25,7 @@
                     :type="top.type"
                     :views="top.views"
                     :title="top.title"
+                    :_id="top._id"
                     @click="handleGotoArticlePage(top._id)"
                 >
                     <template v-slot:cover>

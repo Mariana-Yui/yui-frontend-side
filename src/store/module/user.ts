@@ -1,5 +1,5 @@
 import { VuexModule, Mutation, Action, Module } from 'vuex-module-decorators';
-import { GET_LOGIN_STATUS, WRITE_INFO_INTO_LOCAL, LOGIN } from '../types';
+import { GET_LOGIN_STATUS, WRITE_INFO_INTO_LOCAL, LOGIN, LOGOUT } from '../types';
 import request from '@/utils/axios/axios';
 import utils from '@/utils/util/util';
 
@@ -21,6 +21,12 @@ export default class UserModule extends VuexModule {
             return true;
         }
         return false;
+    }
+    @Mutation
+    public [LOGOUT]() {
+        this._id = '';
+        this.token = '';
+        utils.removeItem('_id', 'token');
     }
     @Mutation
     public [WRITE_INFO_INTO_LOCAL](info: User) {

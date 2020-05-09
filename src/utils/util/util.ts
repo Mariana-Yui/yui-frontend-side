@@ -16,6 +16,20 @@ export class Utils {
             return blob;
         }
     }
+    public blobToBase64(blob: Blob | File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.addEventListener('loadend', () => {
+                resolve(reader.result as string);
+            });
+            if (blob) {
+                reader.readAsDataURL(blob);
+            }
+            setTimeout(() => {
+                reject('exceed');
+            }, 5000);
+        });
+    }
     private _setItem(key: string, val: any): void {
         // 简单判断是否是原始类型
         if (val == null || typeof val === 'function') {

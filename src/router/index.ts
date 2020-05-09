@@ -7,6 +7,7 @@ const Yui = () => import('@/pages/yui/index.vue');
 const Guide = () => import('@/pages/login/guide.vue');
 const Login = () => import('@/pages/login/index.vue');
 const UserSpace = () => import('@/pages/space/index.vue');
+const Profile = () => import('@/pages/profile/index.vue');
 const Collection = () => import('@/pages/space/collection.vue');
 const NotFound = () => import('@/pages/404/index.vue');
 
@@ -62,6 +63,14 @@ const routes: Array<RouteConfig> = [
         component: Collection,
         meta: {
             exclude: true
+        }
+    },
+    {
+        path: '/profile',
+        name: 'UserProfile',
+        component: Profile,
+        meta: {
+            requireAuth: true
         }
     },
     {

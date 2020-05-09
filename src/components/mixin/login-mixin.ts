@@ -69,9 +69,11 @@ export default class LoginMixin extends Vue {
     public handleEndAnimation() {
         if (this.isPass) {
             const wave = this.$refs['wave'] as HTMLElement;
-            wave.style['top'] = '';
-            wave.style['left'] = '';
-            wave.style['animation'] = '';
+            if (wave) {
+                wave.style['top'] = '';
+                wave.style['left'] = '';
+                wave.style['animation'] = '';
+            }
         }
     }
 }

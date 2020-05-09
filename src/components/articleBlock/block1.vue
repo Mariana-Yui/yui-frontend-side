@@ -1,6 +1,6 @@
 <template>
     <div class="article-block-in-all">
-        <div class="article-header">-&nbsp;{{ header }}&nbsp;-</div>
+        <div class="article-header" v-if="!hideHeader">-&nbsp;{{ header }}&nbsp;-</div>
         <div class="article-title">
             {{ title }}
         </div>
@@ -8,7 +8,7 @@
             <span>{{ type === 'broadcast' ? '主播' : '文' }}&nbsp;/&nbsp;{{ author }}</span>
         </div>
         <slot name="cover"></slot>
-        <div class="article-views">
+        <div class="article-views" v-if="views != null">
             <i class="iconfont">&#xe671;</i>浏览量:<span>{{ views }}</span>
         </div>
     </div>
@@ -26,6 +26,8 @@ export default class ArticleBlockOne extends Vue {
     @Prop() title!: string;
     @Prop() author!: string;
     @Prop() views!: number;
+    @Prop() _id!: string;
+    @Prop({ default: false }) hideHeader!: boolean;
 
     get header() {
         return this.type === 'read'

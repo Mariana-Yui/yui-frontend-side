@@ -12,7 +12,9 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 @Component
-export default class Loading extends Vue {}
+export default class Loading extends Vue {
+    // @Prop({default: 'transparent'}) backgroundColor: string;
+}
 </script>
 <style lang="scss" scoped>
 @import '~@/assets/css/default.scss';

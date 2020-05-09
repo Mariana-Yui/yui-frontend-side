@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import CryptoJS from 'crypto-js';
+import * as qiniu from 'qiniu-js';
 import config from '@/config/config.defaults';
 import utils from '../util/util';
 import router from '@/router/permission';
@@ -68,11 +69,17 @@ export class Request {
     }
     /********************************SPACE/ME********************************************/
     public async getToken(email?: string, password?: string) {
-        const { data } = await this.instance.post('/app/me/login', {
-            email,
-            password: password ? CryptoJS.MD5(password, config.secret_key).toString() : undefined
-        });
-        return data;
+        try {
+            const { data } = await this.instance.post('/app/me/login', {
+                email,
+                password: password
+                    ? CryptoJS.MD5(password, config.secret_key).toString()
+                    : undefined
+            });
+            return data;
+        } catch (error) {
+            console.log(error.message);
+        }
     }
     public async getUserDetails(id: string) {
         const { data } = await this.instance.post('/app/space/getUserDetails', {
@@ -115,6 +122,46 @@ export class Request {
             type
         });
         return data;
+    }
+    /********************************PROFILE********************************************/
+    public async getUserInfo(id: string) {
+        const { data } = await this.instance.post('/app/me/profile/getUserInfo', {
+            id
+        });
+        return data;
+    }
+    public async updateUserInfo(user: Record<string, any>) {
+        const { data } = await this.instance.post('/app/me/profile/updateUserInfo', user);
+        return data;
+    }
+    /********************************QINIU********************************************/
+    public async getUpToken() {
+        const { data } = await this.instance.get('/qiniu/getUpToken');
+        return data;
+    }
+    public async uploadFile(
+        file: Blob,
+        key: string,
+        token: string,
+        putExtra: Record<string, any> = { fname: '', params: {}, mimeType: null },
+        config = { useCdnDomain: true }
+    ) {
+        return new Promise((resolve, reject) => {
+            const observer = {
+                next: (res: any) => {
+                    // console.log(res.total.percent);
+                },
+                error: (error: any) => {
+                    console.log(error.message);
+                    reject(error);
+                },
+                complete: (res: any) => {
+                    resolve(res);
+                }
+            };
+            const observable = qiniu.upload(file, key, token, putExtra, config);
+            const subscription = observable.subscribe(observer);
+        });
     }
 }
 

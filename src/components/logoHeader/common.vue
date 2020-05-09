@@ -24,7 +24,7 @@ export default class CommonHeader extends Vue {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 99999;
+    z-index: 99;
     width: 100%;
     height: 40px;
     line-height: 40px;
@@ -32,7 +32,7 @@ export default class CommonHeader extends Vue {
     text-align: center;
     color: $black;
     font-size: $smaller-fontsize;
-    font-weight: 600;
+    font-weight: 700;
     i.iconfont {
         position: absolute;
         top: 0;

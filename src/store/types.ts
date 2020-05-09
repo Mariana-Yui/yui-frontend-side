@@ -17,3 +17,9 @@ export const PUSH_ARTICLE = 'pushArticle';
 export const UNSHIFT_ARTICLE = 'unshiftArticle';
 // loading
 export const TOGGLE_LOADING_ANIMATION = 'toggleLoadingAnimation';
+export const FALSIFY_LOADING_ANIMATION = 'falsifyLoadingAnimation';
+export const TRUIFY_LOADING_ANIMATION = 'truiffyLoadingAnimation';
+// qiniu
+export const SET_UPLOAD_TOKEN = 'getUpToken';
+export const SET_UPLOAD_TOKEN_SYNC = 'setUploadTokenSync';
+export const ERASER_UPLOAD_TOKEN = 'removeUpToken';
