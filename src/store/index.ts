@@ -7,7 +7,7 @@ import loading from './module/loading';
 import qiniu from './module/qiniu';
 
 Vue.use(Vuex);
-
+// state.[moduleName].[variable]访问模块变量
 export default new Vuex.Store({
     state: {},
     mutations: {},

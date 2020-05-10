@@ -31,11 +31,15 @@ export class Request {
             (error: AxiosError) => {
                 if (error.response && error.response.status === 401) {
                     utils.removeItem('_id', 'userInfo', 'token');
-                    router.replace({ path: '/guide', query: { redirect: error.config.url } });
+                    router.push({ path: '/guide', query: { redirect: error.config.url } });
                 }
                 return Promise.reject(error);
             }
         );
+    }
+    /********************************NETEASE********************************************/
+    public async getNetEaseVIPCookie() {
+        await this.instance.get('/app/me/music/getNetEaseVIPCookie');
     }
     /********************************ALL********************************************/
     // 轮播图
@@ -98,7 +102,7 @@ export class Request {
         });
         return data;
     }
-    /********************************COLLECTION********************************************/
+    /********************************COLLECTION/LIKE********************************************/
     public async getTypedArticleCollection(type: string, id: string) {
         const { data } = await this.instance.post('/app/collection/getTypedArticleCollection', {
             type,
@@ -123,6 +127,22 @@ export class Request {
         });
         return data;
     }
+    public async likeArticle(id: string, article_id: string, type: string) {
+        const { data } = await this.instance.post('/app/me/likeArticle', {
+            id,
+            article_id,
+            type
+        });
+        return data;
+    }
+    public async removeLikeArticle(id: string, article_id: string, type: string) {
+        const { data } = await this.instance.post('/app/me/removeLikeArticle', {
+            id,
+            article_id,
+            type
+        });
+        return data;
+    }
     /********************************PROFILE********************************************/
     public async getUserInfo(id: string) {
         const { data } = await this.instance.post('/app/me/profile/getUserInfo', {
@@ -132,6 +152,20 @@ export class Request {
     }
     public async updateUserInfo(user: Record<string, any>) {
         const { data } = await this.instance.post('/app/me/profile/updateUserInfo', user);
+        return data;
+    }
+    public async checkPassword(username: string, password: string) {
+        const { data } = await this.instance.post('/app/me/profile/checkPassword', {
+            username,
+            password: CryptoJS.MD5(password, config.secret_key).toString()
+        });
+        return data;
+    }
+    public async updatePassword(username: string, password: string) {
+        const { data } = await this.instance.post('/app/me/profile/updatePassword', {
+            username,
+            password: CryptoJS.MD5(password, config.secret_key).toString()
+        });
         return data;
     }
     /********************************QINIU********************************************/

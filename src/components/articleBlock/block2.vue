@@ -93,7 +93,37 @@ export default class ArticleBlockTwo extends Mixins(StoreMixin) {
             this.$router.replace({ path: '/guide' });
         }
     }
-    public async handleLikeArticle() {}
+    public async handleLikeArticle() {
+        try {
+            const { code, message } = await this.$axios.getToken();
+            if (code === 0) {
+                let info;
+                if (!this.isLikeActive) {
+                    info = await this.$axios.likeArticle(
+                        this.user_m._id || this.$util.getItem('_id'),
+                        this.article._id,
+                        this.article.type
+                    );
+                } else {
+                    info = await this.$axios.removeLikeArticle(
+                        this.user_m._id || this.$util.getItem('_id'),
+                        this.article._id,
+                        this.article.type
+                    );
+                }
+                if (info.code === 0) {
+                    this.isLikeActive = !this.isLikeActive;
+                    return;
+                }
+                throw Error(info.message);
+            }
+            throw Error(message);
+        } catch (error) {
+            if (error.response && error.response.status === 401) return;
+            this.$toast('该操作需要登录进行~');
+            this.$router.replace({ path: '/guide' });
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>

@@ -9,24 +9,34 @@
         <transition name="fade-out">
             <loading v-show="showLoading"></loading>
         </transition>
+        <my-audio></my-audio>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Loading from '@/components/loading/index.vue';
+import MyAudio from '@/components/audio/index.vue';
 import StoreMixin from '@/components/mixin/store-mixin';
 import { TOGGLE_LOADING_ANIMATION } from './store/types';
 
 @Component({
     components: {
-        Loading
+        Loading,
+        MyAudio
     },
     mixins: [StoreMixin]
 })
 export default class ReadApp extends Vue {
     get showLoading() {
         return this.loading_m ? this.loading_m.show : false;
+    }
+    public async beforeCreate() {
+        try {
+            await this.$axios.getNetEaseVIPCookie();
+        } catch (error) {
+            console.log(error);
+        }
     }
     public created() {
         this.loading_m[TOGGLE_LOADING_ANIMATION]();

@@ -10,30 +10,33 @@
                     @click="handleChangeAvatar"
                 ></span>
             </div>
-            <div class="username-wrapper">
+            <div class="username-wrapper" @click="openDialog('昵称', 'username', user.username)">
                 <span class="text">昵称</span>
                 <span class="username">{{ user.username }}</span>
                 <i class="iconfont rotate">&#xe641;</i>
             </div>
-            <div class="description-wrapper">
+            <div
+                class="description-wrapper"
+                @click="openDialog('简介', 'description', user.description)"
+            >
                 <span class="text">简介</span>
                 <span class="description">{{ user.description }}</span>
                 <i class="iconfont rotate">&#xe641;</i>
             </div>
-            <div class="background-wrapper">
+            <div class="background-wrapper" @click="handleChangeBackground">
                 <span class="text">背景</span>
                 <i class="iconfont rotate">&#xe641;</i>
             </div>
-            <div class="email-wrapper">
+            <div class="email-wrapper" @click="openDialog('邮箱', 'email', user.email)">
                 <span class="text">邮箱</span>
                 <span class="email">{{ user.email }}</span>
                 <i class="iconfont rotate">&#xe641;</i>
             </div>
-            <div class="phone-wrapper">
+            <div class="phone-wrapper" @click="openDialog('手机', 'phone', user.phone)">
                 <span class="text">手机</span>
                 <span class="phone">{{ user.phone }}</span>
             </div>
-            <div class="modify-password-wrapper">
+            <div class="modify-password-wrapper" @click="openDialog('密码')">
                 <span class="text">修改密码</span>
                 <i class="iconfont rotate">&#xe641;</i>
             </div>
@@ -42,7 +45,7 @@
             </div>
         </div>
         <input
-            ref="upload-avatar"
+            ref="upload"
             @change="handleChangeFile"
             type="file"
             accept=".jpg, .png"
@@ -57,14 +60,12 @@
             @cancel="visible = false"
             @confirm="confirm"
         ></image-clipper>
-        <prompt></prompt>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Mixins } from 'vue-property-decorator';
 import CommonHeader from '@/components/logoHeader/common.vue';
-import Prompt from '@/components/prompt/index.vue';
 import {
     LOGOUT,
     SET_UPLOAD_TOKEN,
@@ -78,8 +79,7 @@ import config from '@/config/config.defaults';
 
 @Component({
     components: {
-        CommonHeader,
-        Prompt
+        CommonHeader
     }
 })
 export default class Profile extends Mixins(StoreMixin) {
@@ -116,7 +116,12 @@ export default class Profile extends Mixins(StoreMixin) {
         this.$router.push({ path: '/all', query: { redirect: 'logout' } });
     }
     public handleChangeAvatar() {
-        (this.$refs['upload-avatar'] as HTMLElement).click();
+        (this.$refs['upload'] as HTMLElement).click();
+    }
+    public handleChangeBackground() {
+        this.clipperImgWidth = 900;
+        this.clipperImgHeight = 500;
+        (this.$refs['upload'] as HTMLElement).click();
     }
     public async handleChangeFile(event: Event) {
         const file = ((event.target as any).files as FileList)[0];
@@ -161,6 +166,69 @@ export default class Profile extends Mixins(StoreMixin) {
             console.log(error.message);
             this.$toast(error.message, 'error');
         }
+    }
+    public openDialog(
+        title: string,
+        key?: 'username' | 'description' | 'email' | 'phone',
+        value?: string
+    ) {
+        let type: string | undefined;
+        if (title === '密码') type = 'password';
+        this.$prompt({ title, value, type }, async (val) => {
+            if (type === 'password' && typeof val !== 'string') {
+                if (
+                    !this.$rule.password.pattern.test(val.oldPassword) ||
+                    !this.$rule.password.pattern.test(val.newPassword)
+                ) {
+                    this.$toast(this.$rule.password.message, 'error');
+                } else if (val.oldPassword === val.newPassword) {
+                    this.$toast('新/旧密码不能相同', 'error');
+                } else {
+                    try {
+                        let info = await this.$axios.checkPassword(
+                            this.user.username,
+                            val.oldPassword
+                        );
+                        if (info.code === 0) {
+                            info = await this.$axios.updatePassword(
+                                this.user.username,
+                                val.newPassword
+                            );
+                            if (info.code === 0) {
+                                this.$toast('修改密码成功, 请重新登录~', 'success');
+                                this.user_m[LOGOUT]();
+                                this.$router.push({
+                                    path: '/guide',
+                                    query: { redirect: 'profile' }
+                                });
+                                return;
+                            }
+                        }
+                        throw Error(info.message);
+                    } catch (error) {
+                        this.$toast(error.message, 'error');
+                    }
+                }
+            } else {
+                if (val === '') {
+                    this.$toast(`${title}不能为空`, 'error');
+                } else {
+                    try {
+                        if (key !== undefined && typeof val === 'string') {
+                            this.user[key] = val;
+                        }
+                        const { code, message } = await this.$axios.updateUserInfo(this.user);
+                        if (code === 0) {
+                            this.$toast(`修改${title}成功`, 'success');
+                            return;
+                        }
+                        throw Error(message);
+                    } catch (error) {
+                        this.$toast(error.message, 'error');
+                    }
+                }
+            }
+        });
     }
 }
 </script>

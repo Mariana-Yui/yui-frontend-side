@@ -48,8 +48,24 @@
                         </div>
                         <div class="music-cover" v-if="top.type === 'music'">
                             <img :src="top.cover_img" alt="" />
+                            <div
+                                class="album-img"
+                                :style="{
+                                    'background-image': `url(${top.music_info.cover})`,
+                                    'animation-play-state': animationPlayState
+                                }"
+                                :class="{
+                                    'spinner-animation': spin
+                                }"
+                            ></div>
                             <div class="mask">
-                                <i class="iconfont">{{ music_m.play ? '&#xe6a5;' : '&#xe6a4;' }}</i>
+                                <i class="iconfont" @click="handlePlayMusic(top)">
+                                    {{
+                                        music_m.play && top._id === music_m.relatedArticleId
+                                            ? '&#xe6a5;'
+                                            : '&#xe6a4;'
+                                    }}
+                                </i>
                             </div>
                         </div>
                         <div class="broadcast-cover" v-if="top.type === 'broadcast'">
@@ -71,6 +87,12 @@ import LogoHeader from '@/components/logoHeader/index.vue';
 import VueSwiper from '@/components/Swiper/index.vue';
 import ArticleBlockOne from '@/components/articleBlock/block1.vue';
 import StoreMixin from '@/components/mixin/store-mixin';
+import {
+    PLAY_MUSIC,
+    CHANGE_CURRENT_MUSIC_SOURCE,
+    PAUSE_MUSIC,
+    SET_RELATED_ARTICLE_ID
+} from '@/store/types';
 
 @Component({
     components: {
@@ -103,9 +125,20 @@ export default class ALL extends Mixins(StoreMixin) {
         }
     ];
     private topView: Array<any> = [];
+    private animationPlayState = 'running';
+    private spin = false;
 
     public async created() {
         try {
+            this.$store.watch(
+                (state) => state.music.loaded,
+                (value, oldValue) => {
+                    if (value) {
+                        // infinite rotate 这里点击之后这个动画就一直在, 只是通过控制running/paused, 所以只需要置为true
+                        this.spin = true;
+                    }
+                }
+            );
             const { code, message, info } = await this.$axios.getTopViewArticles();
             if (code === 0) {
                 this.topView = info;
@@ -119,6 +152,25 @@ export default class ALL extends Mixins(StoreMixin) {
     }
     public handleGotoArticlePage(id: string) {
         this.$router.push({ path: '/article', query: { id } });
+    }
+    public handlePlayMusic(top: any) {
+        const { music_info, _id }: { music_info: any; _id: string } = top;
+        this.music_m[SET_RELATED_ARTICLE_ID](_id);
+        if (music_info && music_info.urls && music_info.urls.length > 0) {
+            if (!this.music_m.play) {
+                // 设置音频url
+                this.music_m[CHANGE_CURRENT_MUSIC_SOURCE](music_info.urls);
+                // 播放
+                this.music_m[PLAY_MUSIC]();
+                // 运行animation
+                this.animationPlayState = 'running';
+            } else {
+                this.music_m[PAUSE_MUSIC]();
+                this.animationPlayState = 'paused';
+            }
+        } else {
+            this.$toast('音乐文件缺失, 非常抱歉...', 'info');
+        }
     }
 }
 </script>
@@ -154,6 +206,16 @@ export default class ALL extends Mixins(StoreMixin) {
                 img {
                     width: 100%;
                     height: calc(375px / 2);
+                }
+                .album-img {
+                    @include equalWidthHeightFather(40%, 40%);
+                    @include center();
+                    border-radius: 50%;
+                    transform-origin: top left;
+                    transform: rotate(30deg) translate(-50%, -50%);
+                    &.spinner-animation {
+                        animation: spinner 10s linear infinite;
+                    }
                 }
                 .line {
                     height: 12px;
@@ -199,6 +261,15 @@ export default class ALL extends Mixins(StoreMixin) {
                 margin-top: 5px;
             }
         }
+    }
+}
+
+@keyframes spinner {
+    from {
+        transform: rotate(30deg) translate(-50%, -50%);
+    }
+    to {
+        transform: rotate(390deg) translate(-50%, -50%);
     }
 }
 </style>

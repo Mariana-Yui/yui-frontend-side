@@ -9,6 +9,7 @@ import axios from '@/utils/axios';
 import util from '@/utils/util';
 import rule from '@/utils/rule';
 import toast from '@/components/toast';
+import prompt from '@/components/prompt';
 import ImageClipper from '@/components/imageClipper';
 import '@/assets/css/index.scss';
 import '@/assets/ts/postcss';
@@ -20,6 +21,7 @@ Vue.use(axios)
     .use(util)
     .use(rule)
     .use(toast)
+    .use(prompt)
     .use(VueScroller)
     .use(ImageClipper);
 

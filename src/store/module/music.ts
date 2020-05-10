@@ -4,7 +4,8 @@ import {
     PLAY_MUSIC,
     PAUSE_MUSIC,
     TRUSIFY_MUSIC_LOAD_STATUS,
-    FALSIFY_MUSIC_LOAD_STATUS
+    FALSIFY_MUSIC_LOAD_STATUS,
+    SET_RELATED_ARTICLE_ID
 } from '../types';
 
 @Module({
@@ -14,7 +15,8 @@ import {
 export default class MusicModule extends VuexModule {
     play = false;
     loaded = false;
-    curMusic = '';
+    curMusic: string[] = [];
+    relatedArticleId = '';
 
     @Mutation
     public [PLAY_MUSIC]() {
@@ -32,7 +34,12 @@ export default class MusicModule extends VuexModule {
     public [TRUSIFY_MUSIC_LOAD_STATUS]() {
         this.loaded = true;
     }
-    public [CHANGE_CURRENT_MUSIC_SOURCE](url: string) {
+    @Mutation
+    public [CHANGE_CURRENT_MUSIC_SOURCE](url: string[]) {
         this.curMusic = url;
+    }
+    @Mutation
+    public [SET_RELATED_ARTICLE_ID](id: string) {
+        this.relatedArticleId = id;
     }
 }
