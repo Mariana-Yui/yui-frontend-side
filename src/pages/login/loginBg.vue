@@ -50,6 +50,32 @@ export default class LoginBg extends Vue {}
     }
     .slot-wrapper {
         margin-top: calc(#{$more-larger-fontsize} + 50px);
+        .flex {
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            font-size: $smaller-fontsize;
+            border: 1px solid $gray;
+            opacity: 0.4;
+            padding: 10px;
+            label {
+                padding-right: 10px;
+                border-right: 1px solid $gray;
+            }
+            input {
+                flex: 1;
+                padding-left: 10px;
+                border: 0;
+                outline-style: none;
+            }
+        }
+        [class$='warn'] {
+            height: 15px;
+            line-height: 15px;
+            font-size: 9px;
+            color: rgba(255, 0, 0, 0.7);
+        }
     }
 }
 </style>

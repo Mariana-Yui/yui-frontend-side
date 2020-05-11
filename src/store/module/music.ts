@@ -1,12 +1,23 @@
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators';
 import {
-    CHANGE_CURRENT_MUSIC_SOURCE,
     PLAY_MUSIC,
     PAUSE_MUSIC,
     TRUSIFY_MUSIC_LOAD_STATUS,
     FALSIFY_MUSIC_LOAD_STATUS,
-    SET_RELATED_ARTICLE_ID
+    SET_RELATED_ARTICLE_ID,
+    CHANGE_CURRENT_MUSIC_INFO,
+    CHANGE_CURRENT_MUSIC_SOURCE,
+    SPLICE_CURRENT_MUSIC_SOURCE
 } from '../types';
+
+interface MusicInfo {
+    name: string;
+    urls: Array<string>;
+    album: string;
+    artists: string;
+    cover: string;
+    id: string;
+}
 
 @Module({
     name: 'music',
@@ -15,7 +26,14 @@ import {
 export default class MusicModule extends VuexModule {
     play = false;
     loaded = false;
-    curMusic: string[] = [];
+    curMusicInfo: MusicInfo = {
+        id: '',
+        name: '',
+        album: '',
+        artists: '',
+        cover: '',
+        urls: []
+    };
     relatedArticleId = '';
 
     @Mutation
@@ -35,8 +53,16 @@ export default class MusicModule extends VuexModule {
         this.loaded = true;
     }
     @Mutation
-    public [CHANGE_CURRENT_MUSIC_SOURCE](url: string[]) {
-        this.curMusic = url;
+    public [CHANGE_CURRENT_MUSIC_INFO](info: MusicInfo) {
+        this.curMusicInfo = info;
+    }
+    @Mutation
+    public [CHANGE_CURRENT_MUSIC_SOURCE](urls: string[]) {
+        this.curMusicInfo.urls = urls;
+    }
+    @Mutation
+    public [SPLICE_CURRENT_MUSIC_SOURCE](index: number) {
+        this.curMusicInfo.urls.splice(index, 1);
     }
     @Mutation
     public [SET_RELATED_ARTICLE_ID](id: string) {

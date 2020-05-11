@@ -41,6 +41,19 @@ export class Request {
     public async getNetEaseVIPCookie() {
         await this.instance.get('/app/me/music/getNetEaseVIPCookie');
     }
+    public async getNewMusicUrl(id: string) {
+        const { data } = await this.instance.get('/app/me/music/getNewMusicUrl', {
+            params: { id }
+        });
+        return data;
+    }
+    public async updateMusicUrls(id: string, music_info: any) {
+        const { data } = await this.instance.post('/app/me/music/updateMusicUrls', {
+            id,
+            music_info
+        });
+        return data;
+    }
     /********************************ALL********************************************/
     // 轮播图
     public async getBannerInfo() {
@@ -196,6 +209,34 @@ export class Request {
             const observable = qiniu.upload(file, key, token, putExtra, config);
             const subscription = observable.subscribe(observer);
         });
+    }
+    /********************************REGISTER********************************************/
+    public async checkUsableEmail(email: string) {
+        const { data } = await this.instance.post('/app/me/register/checkUsableEmail', { email });
+        return data;
+    }
+    public async checkUsableUserInfo(
+        code: string,
+        username: string,
+        email: string,
+        password: string
+    ) {
+        const { data } = await this.instance.post('/app/me/register/checkUsableUserInfo', {
+            code,
+            username,
+            email,
+            password: CryptoJS.MD5(password, config.secret_key).toString()
+        });
+        return data;
+    }
+    /********************************SEARCH********************************************/
+    public async getTypedArticles(type: string, size: number, skip: number) {
+        const { data } = await this.instance.post('/app/me/search/getTypedArticles', {
+            type,
+            size,
+            skip
+        });
+        return data;
     }
 }
 

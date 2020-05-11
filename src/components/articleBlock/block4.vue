@@ -2,11 +2,11 @@
     <div class="article-block4" :style="{ 'background-image': `url(${article.cover_img})` }">
         <div class="article-info">
             <span class="article-title">{{ article.title }}</span>
-            <span class="film-name">《{{ article.film_info.name }}》</span>
+            <span class="film-name" v-if="article.film_info">《{{ article.film_info.name }}》</span>
         </div>
         <div class="bottom">
             <span class="article-publish-time">{{ publish_time }}</span>
-            <span class="article-author">{{ article.author }}</span>
+            <span class="article-author"><i>&copy;</i>{{ article.author }}</span>
         </div>
     </div>
 </template>
@@ -19,7 +19,7 @@ export default class ArticleBlockFour extends Vue {
     @Prop() article!: {
         cover_img: string;
         title: string;
-        film_info: {
+        film_info?: {
             name: string;
             quote: string;
         };
@@ -43,7 +43,6 @@ export default class ArticleBlockFour extends Vue {
 @import '~@/assets/css/mixin.scss';
 
 .article-block4 {
-    margin: 20px 20px 0;
     height: calc(375px / 2.4);
     position: relative;
     display: flex;
@@ -79,6 +78,10 @@ export default class ArticleBlockFour extends Vue {
             display: block;
             &:last-child {
                 padding-top: 3px;
+                text-align: center;
+                i {
+                    vertical-align: middle;
+                }
             }
         }
     }

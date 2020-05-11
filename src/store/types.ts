@@ -8,7 +8,9 @@ export const PLAY_MUSIC = 'playMusic';
 export const PAUSE_MUSIC = 'pauseMusic';
 export const FALSIFY_MUSIC_LOAD_STATUS = 'falsifyMusicLoadStatus';
 export const TRUSIFY_MUSIC_LOAD_STATUS = 'trusifyMusicLoadStatus';
+export const CHANGE_CURRENT_MUSIC_INFO = 'changeCurrentMusicInfo';
 export const CHANGE_CURRENT_MUSIC_SOURCE = 'changeCurrentMusicSrc';
+export const SPLICE_CURRENT_MUSIC_SOURCE = 'spliceCurrentMusicSrc';
 export const SET_RELATED_ARTICLE_ID = 'setRelatedArticleId';
 // article
 export const CHANGE_CURRENT_ARTICLE_TYPE = 'changeCurArticleType';

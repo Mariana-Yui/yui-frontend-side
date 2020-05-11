@@ -39,4 +39,7 @@ export default class VueScroller extends Vue {
 ::v-deep .spinner-holder {
     display: inline-block;
 }
+::v-deep .sk-wave {
+    margin-top: 15px;
+}
 </style>

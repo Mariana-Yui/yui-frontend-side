@@ -99,12 +99,17 @@ export default class ArticleBlockTwo extends Mixins(StoreMixin) {
             if (code === 0) {
                 let info;
                 if (!this.isLikeActive) {
+                    this.article.likes.push(this.user_m._id || this.$util.getItem('_id'));
                     info = await this.$axios.likeArticle(
                         this.user_m._id || this.$util.getItem('_id'),
                         this.article._id,
                         this.article.type
                     );
                 } else {
+                    const index = this.article.likes.indexOf(
+                        this.user_m._id || this.$util.getItem('_id')
+                    );
+                    index > -1 && this.article.likes.splice(index, 1);
                     info = await this.$axios.removeLikeArticle(
                         this.user_m._id || this.$util.getItem('_id'),
                         this.article._id,

@@ -177,6 +177,9 @@ export default class ArticleCollection extends Vue {
                 }
             }
         }
+        ::v-deep .article-block4 {
+            margin: 20px 20px 0;
+        }
     }
 }
 </style>

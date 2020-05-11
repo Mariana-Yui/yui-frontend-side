@@ -29,10 +29,13 @@ export default class ArticleBlockThree extends Vue {
 @import '~@/assets/css/default.scss';
 
 .article-block3 {
-    padding: 22px 25px 0;
+    margin: 22px 25px 0;
     display: flex;
     font-weight: 300;
     font-size: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    background-color: $white;
     .music-cover {
         flex: 0 0 80px;
         height: 80px;
@@ -52,8 +55,8 @@ export default class ArticleBlockThree extends Vue {
         .music-info {
             display: block;
             position: absolute;
-            bottom: 0;
-            right: 0;
+            bottom: 5px;
+            right: 10px;
             font-size: 10px;
         }
     }

@@ -20,16 +20,19 @@ import { Debounce, Bind } from 'lodash-decorators';
 @Component
 export default class LoginMixin extends Vue {
     public focusOnRendered = true;
+    public code = '';
     public email = '';
     public password = '';
+    public username = '';
     public emailPass = false;
     public passwordPass = false;
+    public codePass = false;
+    public usernamePass = false;
+    public codeWarn = '';
     public emailWarn = '';
     public passwordWarn = '';
+    public usernameWarn = '';
 
-    get isPass() {
-        return this.emailPass && this.passwordPass;
-    }
     @Bind()
     @Debounce(500)
     public validateEmail() {
@@ -40,7 +43,6 @@ export default class LoginMixin extends Vue {
             this.emailWarn = '';
             this.emailPass = true;
         }
-        this.focusOnRendered = false;
     }
     @Bind()
     @Debounce(500)
@@ -53,27 +55,26 @@ export default class LoginMixin extends Vue {
             this.passwordWarn = '';
         }
     }
-    public handleTouchButton(event: TouchEvent) {
-        if (this.isPass) {
-            const { clientX, clientY } = event.touches[0];
-            const { left, top, width, height } = (this.$refs[
-                'login-btn'
-            ] as HTMLElement).getBoundingClientRect();
-            const [Xpercent, Ypercent] = [(clientX - left) / width, (clientY - top) / height];
-            const wave = this.$refs['wave'] as HTMLElement;
-            wave.style['top'] = `${Ypercent * 100}%`;
-            wave.style['left'] = `${Xpercent * 100}%`;
-            wave.style['animation'] = 'wave .7s ease';
+    @Bind()
+    @Debounce(500)
+    public validateUsername() {
+        if (!this.$rule.username.pattern.test(this.username)) {
+            this.usernameWarn = this.$rule.username.message;
+            this.usernamePass = false;
+        } else {
+            this.usernamePass = true;
+            this.usernameWarn = '';
         }
     }
-    public handleEndAnimation() {
-        if (this.isPass) {
-            const wave = this.$refs['wave'] as HTMLElement;
-            if (wave) {
-                wave.style['top'] = '';
-                wave.style['left'] = '';
-                wave.style['animation'] = '';
-            }
+    @Bind()
+    @Debounce(500)
+    public async validateCode() {
+        if (this.code.length !== 4) {
+            this.codeWarn = '验证码长度为4';
+            this.codePass = false;
+        } else {
+            this.codeWarn = '';
+            this.codePass = true;
         }
     }
 }

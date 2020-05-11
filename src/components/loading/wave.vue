@@ -17,7 +17,6 @@ export default class LoadingWave extends Vue {}
 <style lang="scss" scoped>
 @import '~@/assets/css/default.scss';
 .sk-wave {
-    margin-top: 15px;
     width: 30px;
     height: 30px;
     display: flex;

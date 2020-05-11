@@ -10,7 +10,7 @@
                     v-for="art in arts"
                     :key="art.type"
                     :style="{ 'background-image': `url(${art.cover})` }"
-                    :to="{ path: `/search/${art.type}` }"
+                    :to="{ path: '/search', query: { type: art.type } }"
                     class="artX-thumb"
                 >
                     <span>{{ art.name }}</span>
@@ -89,7 +89,7 @@ import ArticleBlockOne from '@/components/articleBlock/block1.vue';
 import StoreMixin from '@/components/mixin/store-mixin';
 import {
     PLAY_MUSIC,
-    CHANGE_CURRENT_MUSIC_SOURCE,
+    CHANGE_CURRENT_MUSIC_INFO,
     PAUSE_MUSIC,
     SET_RELATED_ARTICLE_ID
 } from '@/store/types';
@@ -158,8 +158,9 @@ export default class ALL extends Mixins(StoreMixin) {
         this.music_m[SET_RELATED_ARTICLE_ID](_id);
         if (music_info && music_info.urls && music_info.urls.length > 0) {
             if (!this.music_m.play) {
+                music_info.urls = music_info.urls.slice(0, 1);
                 // 设置音频url
-                this.music_m[CHANGE_CURRENT_MUSIC_SOURCE](music_info.urls);
+                this.music_m[CHANGE_CURRENT_MUSIC_INFO](music_info);
                 // 播放
                 this.music_m[PLAY_MUSIC]();
                 // 运行animation
@@ -210,6 +211,9 @@ export default class ALL extends Mixins(StoreMixin) {
                 .album-img {
                     @include equalWidthHeightFather(40%, 40%);
                     @include center();
+                    background-size: cover;
+                    background-position-x: 50%;
+                    background-repeat: no-repeat;
                     border-radius: 50%;
                     transform-origin: top left;
                     transform: rotate(30deg) translate(-50%, -50%);
