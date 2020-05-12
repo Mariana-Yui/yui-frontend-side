@@ -59,7 +59,7 @@
                                 }"
                             ></div>
                             <div class="mask">
-                                <i class="iconfont" @click="handlePlayMusic(top)">
+                                <i class="iconfont" @click.stop="handlePlayMusic(top)">
                                     {{
                                         music_m.play && top._id === music_m.relatedArticleId
                                             ? '&#xe6a5;'
@@ -86,7 +86,7 @@ import { Component, Vue, Mixins } from 'vue-property-decorator';
 import LogoHeader from '@/components/logoHeader/index.vue';
 import VueSwiper from '@/components/Swiper/index.vue';
 import ArticleBlockOne from '@/components/articleBlock/block1.vue';
-import StoreMixin from '@/components/mixin/store-mixin';
+import StoreMixin from '@/mixin/store-mixin';
 import {
     PLAY_MUSIC,
     CHANGE_CURRENT_MUSIC_INFO,

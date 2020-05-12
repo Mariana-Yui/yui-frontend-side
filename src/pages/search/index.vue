@@ -2,7 +2,12 @@
     <div class="search-page">
         <common-header :title="title"></common-header>
         <div class="search-input-wrapper">
-            <input type="text" v-model="keyword" placeholder="Search Article" />
+            <input
+                type="text"
+                v-model="keywords"
+                @input="handleInputKeywords"
+                placeholder="Search Article"
+            />
             <i class="iconfont">&#xe632;</i>
         </div>
         <div ref="articles" class="article-wrapper">
@@ -13,10 +18,31 @@
                     :article="article"
                 ></article-block-four>
             </template>
+            <template v-if="articles && articles.length && type === 'music'">
+                <article-block-three
+                    v-for="article in articles"
+                    :key="article._id"
+                    :article="article"
+                ></article-block-three>
+            </template>
+            <template v-if="articles && articles.length && type === 'film'">
+                <article-block-four
+                    v-for="article in articles"
+                    :key="article._id"
+                    :article="article"
+                ></article-block-four>
+            </template>
+            <template v-if="articles && articles.length && type === 'broadcast'">
+                <article-block-three
+                    v-for="article in articles"
+                    :key="article._id"
+                    :article="article"
+                ></article-block-three>
+            </template>
         </div>
         <div class="wave-loading">
             <wave-loading v-if="!ending"></wave-loading>
-            <span>无更多文章</span>
+            <span v-else>无更多文章</span>
         </div>
     </div>
 </template>
@@ -24,8 +50,10 @@
 <script lang="ts">
 /* eslint-disable indent */
 import * as _ from 'lodash';
-import { Component, Vue } from 'vue-property-decorator';
+import { Debounce, Bind } from 'lodash-decorators';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import CommonHeader from '@/components/logoHeader/common.vue';
+import ArticleBlockThree from '@/components/articleBlock/block3.vue';
 import ArticleBlockFour from '@/components/articleBlock/block4.vue';
 import WaveLoading from '@/components/loading/wave.vue';
 
@@ -43,16 +71,19 @@ interface Article {
 @Component({
     components: {
         CommonHeader,
+        ArticleBlockThree,
         ArticleBlockFour,
         WaveLoading
     }
 })
 export default class Search extends Vue {
     private articles: Article[] = [];
-    private keyword = '';
+    private keywords = '';
+    // 500ms 前的keywords
+    private prev = '';
     private ending = false;
     private requesting = false;
-    private count = 5;
+    private count = 10;
     private turn = 0;
     // 滑动离页面底部距离小于threshold时发送请求
     private threshold = 5;
@@ -73,16 +104,25 @@ export default class Search extends Vue {
         return this.count * this.turn;
     }
 
+    // @Watch('prev')
+    // onKeywordsChanged(value: string) {
+    //     this.turn = 0;
+    // }
     public async getTypedArticles() {
         try {
             this.requesting = true;
             const { code, message, info } = await this.$axios.getTypedArticles(
                 this.type as string,
                 this.count,
-                this.skip
+                this.skip,
+                this.keywords
             );
             if (code === 0) {
-                this.articles.push(...info.articles);
+                if (this.turn === 0) {
+                    this.articles = info.articles;
+                } else {
+                    this.articles.push(...info.articles);
+                }
                 // 通知前端是否还有文章
                 this.ending = info.ending;
                 this.turn++;
@@ -95,26 +135,36 @@ export default class Search extends Vue {
         }
     }
     public async created() {
+        console.log('enter');
         await this.getTypedArticles();
     }
     public async mounted() {
         this.$nextTick(() => {
             const self = this;
-            window.addEventListener(
-                'scroll',
-                _.throttle(async () => {
-                    const { clientHeight, scrollTop } = document.documentElement;
-                    const articleHeight = (self.$refs['articles'] as HTMLElement).clientHeight;
-                    console.log(articleHeight - scrollTop - clientHeight - 50);
-                    if (articleHeight - scrollTop - clientHeight - 50 < this.threshold) {
-                        // 请求已发送或无更多内容不再触发
-                        if (!this.requesting && !this.ending) {
-                            await this.getTypedArticles();
-                        }
+            window.onscroll = _.throttle(async () => {
+                const { clientHeight, scrollTop } = document.documentElement;
+                const articleHeight = (self.$refs['articles'] as HTMLElement).clientHeight;
+                if (articleHeight - scrollTop - clientHeight + 50 < this.threshold) {
+                    // 请求已发送或无更多内容不再触发
+                    if (!this.requesting && !this.ending) {
+                        await this.getTypedArticles();
                     }
-                }, 60)
-            );
+                }
+            }, 60);
         });
+    }
+    public beforeDestroy() {
+        console.log('destroyed');
+        window.onscroll = null;
+    }
+    @Bind()
+    @Debounce(500)
+    public async handleInputKeywords() {
+        if (this.prev !== this.keywords) {
+            this.turn = 0;
+            this.prev = this.keywords;
+            await this.getTypedArticles();
+        }
     }
 }
 </script>
@@ -153,6 +203,9 @@ export default class Search extends Vue {
     .article-wrapper {
         padding: 0 20px 20px;
         ::v-deep .article-block4 {
+            margin-top: 20px;
+        }
+        ::v-deep .article-block3 {
             margin-top: 20px;
         }
     }

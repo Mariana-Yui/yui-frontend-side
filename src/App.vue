@@ -1,10 +1,9 @@
 <template>
     <div id="app">
         <transition name="slide-fade">
-            <keep-alive v-if="$route.meta.exclude">
-                <router-view></router-view>
-            </keep-alive>
-            <router-view v-else></router-view>
+            <!-- <keep-alive :exclude="['SpaceCollection', 'Search', 'Article']"> -->
+            <router-view></router-view>
+            <!-- </keep-alive> -->
         </transition>
         <transition name="fade-out">
             <loading v-show="showLoading"></loading>
@@ -17,7 +16,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Loading from '@/components/loading/index.vue';
 import MyAudio from '@/components/audio/index.vue';
-import StoreMixin from '@/components/mixin/store-mixin';
+import StoreMixin from '@/mixin/store-mixin';
 import { TOGGLE_LOADING_ANIMATION } from './store/types';
 
 @Component({

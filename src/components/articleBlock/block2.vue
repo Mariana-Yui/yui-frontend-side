@@ -1,5 +1,5 @@
 <template>
-    <div class="article-block2">
+    <div class="article-block2" @click="handleGotoMainPage">
         <img class="article-cover" :src="article.cover_img" alt="" />
         <div class="article-info">
             <template v-if="!isCollect">
@@ -16,7 +16,7 @@
                         v-if="!hideCollect"
                         class="article-collection"
                         :class="{ 'collection-active': isCollectionActive }"
-                        @click="handleCollectArticle"
+                        @click.stop="handleCollectArticle"
                     ></i>
                     <i class="article-share"></i>
                     <i
@@ -24,7 +24,7 @@
                         :class="{ 'like-active': isLikeActive }"
                         @click="handleLikeArticle"
                     ></i>
-                    <span class="likes">{{ article.likes && article.likes.length }}</span>
+                    <span class.stop="likes">{{ article.likes && article.likes.length }}</span>
                 </div>
             </div>
         </div>
@@ -33,25 +33,13 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
-import StoreMixin from '@/components/mixin/store-mixin';
+import StoreMixin from '@/mixin/store-mixin';
+import ArticleMixin from '@/mixin/article-mixin';
 
 @Component
-export default class ArticleBlockTwo extends Mixins(StoreMixin) {
-    @Prop() article!: {
-        _id: string;
-        type: string;
-        src: string;
-        title: string;
-        author: string;
-        publishTime: string;
-        likes: Array<string>;
-        collects: Array<string>;
-        abstract?: string;
-    };
+export default class ArticleBlockTwo extends Mixins(StoreMixin, ArticleMixin) {
     @Prop({ default: false }) hideCollect!: boolean;
     @Prop({ default: false }) isCollect!: boolean;
-    private isCollectionActive = false;
-    private isLikeActive = false;
 
     public created() {
         const id = this.user_m._id || this.$util.getItem('_id');
@@ -62,72 +50,11 @@ export default class ArticleBlockTwo extends Mixins(StoreMixin) {
             this.isCollectionActive = true;
         }
     }
-    public async handleCollectArticle() {
-        try {
-            const { code, message } = await this.$axios.getToken();
-            if (code === 0) {
-                let info;
-                if (!this.isCollectionActive) {
-                    info = await this.$axios.collectArticle(
-                        this.user_m._id || this.$util.getItem('_id'),
-                        this.article._id,
-                        this.article.type
-                    );
-                } else {
-                    info = await this.$axios.removeCollectArticle(
-                        this.user_m._id || this.$util.getItem('_id'),
-                        this.article._id,
-                        this.article.type
-                    );
-                }
-                if (info.code === 0) {
-                    this.isCollectionActive = !this.isCollectionActive;
-                    return;
-                }
-                throw Error(info.message);
-            }
-            throw Error(message);
-        } catch (error) {
-            if (error.response && error.response.status === 401) return;
-            this.$toast('该操作需要登录进行~');
-            this.$router.replace({ path: '/guide' });
-        }
-    }
-    public async handleLikeArticle() {
-        try {
-            const { code, message } = await this.$axios.getToken();
-            if (code === 0) {
-                let info;
-                if (!this.isLikeActive) {
-                    this.article.likes.push(this.user_m._id || this.$util.getItem('_id'));
-                    info = await this.$axios.likeArticle(
-                        this.user_m._id || this.$util.getItem('_id'),
-                        this.article._id,
-                        this.article.type
-                    );
-                } else {
-                    const index = this.article.likes.indexOf(
-                        this.user_m._id || this.$util.getItem('_id')
-                    );
-                    index > -1 && this.article.likes.splice(index, 1);
-                    info = await this.$axios.removeLikeArticle(
-                        this.user_m._id || this.$util.getItem('_id'),
-                        this.article._id,
-                        this.article.type
-                    );
-                }
-                if (info.code === 0) {
-                    this.isLikeActive = !this.isLikeActive;
-                    return;
-                }
-                throw Error(info.message);
-            }
-            throw Error(message);
-        } catch (error) {
-            if (error.response && error.response.status === 401) return;
-            this.$toast('该操作需要登录进行~');
-            this.$router.replace({ path: '/guide' });
-        }
+    public handleGotoMainPage() {
+        this.$router.push({
+            path: '/article',
+            query: { id: this.article._id }
+        });
     }
 }
 </script>

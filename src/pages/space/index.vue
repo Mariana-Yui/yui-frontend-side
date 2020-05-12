@@ -11,14 +11,22 @@
         >
             <div class="user-line">
                 <div class="user-following">
-                    关注{{ self ? '我' : 'TA' }}的<span>{{ userInfo.following || 0 }}</span>
+                    关注{{ self ? '我' : 'TA' }}的<span>{{
+                        userInfo.details &&
+                            userInfo.details.following &&
+                            userInfo.details.following.length
+                    }}</span>
                 </div>
                 <div
                     class="user-avatar"
                     :style="{ 'background-image': `url(${userInfo.avatar})` }"
                 ></div>
                 <div class="user-followers">
-                    {{ self ? '我' : 'TA' }}关注的<span>{{ userInfo.followers || 0 }}</span>
+                    {{ self ? '我' : 'TA' }}关注的<span>{{
+                        userInfo.details &&
+                            userInfo.details.followers &&
+                            userInfo.details.followers.length
+                    }}</span>
                 </div>
             </div>
             <div class="username">{{ userInfo.username }}</div>
@@ -74,7 +82,7 @@
 
 <script lang="ts">
 import { Component, Vue, Mixins } from 'vue-property-decorator';
-import StoreMixin from '@/components/mixin/store-mixin';
+import StoreMixin from '@/mixin/store-mixin';
 import CommonHeader from '@/components/logoHeader/common.vue';
 import ArticleBlockTwo from '@/components/articleBlock/block2.vue';
 import {} from '@/store/types';
@@ -194,12 +202,13 @@ export default class UserSpace extends Mixins(StoreMixin) {
             align-items: center;
             .user-following,
             .user-followers {
-                color: $gray;
+                /* color: $gray; */
+                color: $light-white;
                 font-size: $smaller-fontsize;
                 span {
                     padding-top: 5px;
                     display: block;
-                    color: $black;
+                    /* color: $black; */
                     font-weight: 550;
                     text-align: center;
                 }
@@ -218,6 +227,7 @@ export default class UserSpace extends Mixins(StoreMixin) {
             margin-top: 8px;
             text-align: center;
             font-weight: 600;
+            color: $light-white;
         }
         .description {
             margin-top: 8px;

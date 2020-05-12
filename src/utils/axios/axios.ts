@@ -39,7 +39,7 @@ export class Request {
     }
     /********************************NETEASE********************************************/
     public async getNetEaseVIPCookie() {
-        await this.instance.get('/app/me/music/getNetEaseVIPCookie');
+        await this.instance.get('/app/me/music/getNetEaseVIPCookie', { params: { noauth: 1 } });
     }
     public async getNewMusicUrl(id: string) {
         const { data } = await this.instance.get('/app/me/music/getNewMusicUrl', {
@@ -50,7 +50,8 @@ export class Request {
     public async updateMusicUrls(id: string, music_info: any) {
         const { data } = await this.instance.post('/app/me/music/updateMusicUrls', {
             id,
-            music_info
+            music_info,
+            noauth: 1
         });
         return data;
     }
@@ -230,11 +231,35 @@ export class Request {
         return data;
     }
     /********************************SEARCH********************************************/
-    public async getTypedArticles(type: string, size: number, skip: number) {
+    public async getTypedArticles(type: string, size: number, skip: number, keywords?: string) {
         const { data } = await this.instance.post('/app/me/search/getTypedArticles', {
             type,
             size,
-            skip
+            skip,
+            keywords,
+            noauth: 1
+        });
+        return data;
+    }
+    /********************************ARTICLE********************************************/
+    public async getArticleContent(id: string) {
+        const { data } = await this.instance.post('/app/me/article/getArticleContent', {
+            id,
+            noauth: 1
+        });
+        return data;
+    }
+    public async subscribeAuthor(id: string, author_id: string) {
+        const { data } = await this.instance.post('/app/me/article/subscribeAuthor', {
+            id,
+            author_id
+        });
+        return data;
+    }
+    public async removeSubscribeAuthor(id: string, author_id: string) {
+        const { data } = await this.instance.post('/app/me/article/removeSubscribeAuthor', {
+            id,
+            author_id
         });
         return data;
     }

@@ -1,5 +1,5 @@
 <template>
-    <div class="article-block-in-all">
+    <div class="article-block-in-all" @click="handleGotoMainPage">
         <div class="article-header" v-if="!hideHeader">-&nbsp;{{ header }}&nbsp;-</div>
         <div class="article-title">
             {{ title }}
@@ -37,6 +37,10 @@ export default class ArticleBlockOne extends Vue {
             : this.type === 'film'
             ? '影 视'
             : '电 台';
+    }
+
+    public handleGotoMainPage() {
+        this.$router.push({ path: '/article', query: { id: this._id } });
     }
 }
 </script>

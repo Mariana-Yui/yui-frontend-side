@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch, Mixins } from 'vue-property-decorator';
-import StoreMixin from '../mixin/store-mixin';
+import StoreMixin from '@/mixin/store-mixin';
 import {
     FALSIFY_MUSIC_LOAD_STATUS,
     TRUSIFY_MUSIC_LOAD_STATUS,

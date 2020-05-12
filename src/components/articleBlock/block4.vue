@@ -1,5 +1,9 @@
 <template>
-    <div class="article-block4" :style="{ 'background-image': `url(${article.cover_img})` }">
+    <div
+        class="article-block4"
+        :style="{ 'background-image': `url(${article.cover_img})` }"
+        @click="handleGotoMainPage"
+    >
         <div class="article-info">
             <span class="article-title">{{ article.title }}</span>
             <span class="film-name" v-if="article.film_info">《{{ article.film_info.name }}》</span>
@@ -17,6 +21,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 @Component
 export default class ArticleBlockFour extends Vue {
     @Prop() article!: {
+        _id: string;
         cover_img: string;
         title: string;
         film_info?: {
@@ -35,6 +40,9 @@ export default class ArticleBlockFour extends Vue {
                 .join('/');
         }
         return '';
+    }
+    public handleGotoMainPage() {
+        this.$router.push({ path: '/article', query: { id: this.article._id } });
     }
 }
 </script>

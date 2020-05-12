@@ -49,7 +49,7 @@
 import { Component, Vue, Mixins } from 'vue-property-decorator';
 import LoginBg from '../login/loginBg.vue';
 import WaveButton from '@/components/wave-button/index.vue';
-import LoginMixin from '@/components/mixin/login-mixin';
+import LoginMixin from '@/mixin/login-mixin';
 import { LOGIN } from '../../store/types';
 
 @Component({

@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import StoreMixin from '@/components/mixin/store-mixin';
+import StoreMixin from '@/mixin/store-mixin';
 import LogoHeader from '@/components/logoHeader/index.vue';
 import ArticleBlockTwo from '@/components/articleBlock/block2.vue';
 import VueScroller from '@/components/scroller/index.vue';

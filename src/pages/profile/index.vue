@@ -74,7 +74,7 @@ import {
     TRUIFY_LOADING_ANIMATION,
     FALSIFY_LOADING_ANIMATION
 } from '@/store/types';
-import StoreMixin from '@/components/mixin/store-mixin';
+import StoreMixin from '@/mixin/store-mixin';
 import config from '@/config/config.defaults';
 
 @Component({

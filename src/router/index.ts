@@ -13,6 +13,7 @@ const UserSpace = () => import('@/pages/space/index.vue');
 const Profile = () => import('@/pages/profile/index.vue');
 const Collection = () => import('@/pages/space/collection.vue');
 const Search = () => import('@/pages/search/index.vue');
+const Article = () => import('@/pages/article/index.vue');
 const NotFound = () => import('@/pages/404/index.vue');
 
 Vue.use(VueRouter);
@@ -97,7 +98,18 @@ const routes: Array<RouteConfig> = [
     {
         path: '/search',
         name: 'Search',
-        component: Search
+        component: Search,
+        meta: {
+            exclude: true
+        }
+    },
+    {
+        path: '/article',
+        name: 'Article',
+        component: Article,
+        meta: {
+            exclude: true
+        }
     },
     {
         path: '*',
@@ -109,7 +121,10 @@ const routes: Array<RouteConfig> = [
 const router = new VueRouter({
     mode: 'history',
     base: process.env.BASE_URL,
-    routes
+    routes,
+    scrollBehavior(to, from, position) {
+        return { x: 0, y: 0 };
+    }
 });
 
 export default router;

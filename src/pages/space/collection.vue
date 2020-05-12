@@ -180,6 +180,9 @@ export default class ArticleCollection extends Vue {
         ::v-deep .article-block4 {
             margin: 20px 20px 0;
         }
+        ::v-deep .article-block3 {
+            margin: 22px 25px 0;
+        }
     }
 }
 </style>
