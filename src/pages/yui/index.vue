@@ -42,6 +42,9 @@ export default class YUI extends Vue {
     public mounted() {
         this.$nextTick(() => {
             this.scroller = (this.$refs['vue-scroller'] as Vue).$refs['scroller'] as any;
+            ((this.scroller.$el as HTMLElement).querySelector(
+                '.loading-layer'
+            ) as HTMLElement).style.paddingBottom = '24px';
         });
     }
     public async handleRefresh() {
@@ -52,17 +55,28 @@ export default class YUI extends Vue {
     }
     public async handleInfinite() {
         setTimeout(async () => {
-            if (!this.noMore) {
-                this.noMore = await this.article_m[GET_ARTICLE_REGULARLY_ASYNC]();
-                this.scroller.finishInfinite(this.noMore);
+            this.noMore = await this.article_m[GET_ARTICLE_REGULARLY_ASYNC]();
+            if (this.scroller.loadingState === 2) {
+                const wave = (this.scroller.$el as HTMLElement).querySelector(
+                    '.js-wave'
+                ) as HTMLElement;
+                wave.style.height = '0px';
+                wave.style.marginTop = '0px';
+            } else {
+                const wave = (this.scroller.$el as HTMLElement).querySelector(
+                    '.js-wave'
+                ) as HTMLElement;
+                wave.style.height = '30px';
+                wave.style.marginTop = '15px';
             }
+            this.scroller.finishInfinite(this.noMore);
         }, 1000);
     }
 }
 </script>
 <style lang="scss" scoped>
 #yui {
-    margin: 0 0 60px;
+    /* margin: 0 0 60px; */
     .content-scroller {
         padding-top: 40px;
     }

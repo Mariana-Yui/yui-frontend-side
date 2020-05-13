@@ -181,7 +181,11 @@ export default class ArticleCollection extends Vue {
             margin: 20px 20px 0;
         }
         ::v-deep .article-block3 {
-            margin: 22px 25px 0;
+            padding: 22px 25px 0;
+            background-color: $white;
+            &:last-child {
+                padding-bottom: 22px;
+            }
         }
     }
 }

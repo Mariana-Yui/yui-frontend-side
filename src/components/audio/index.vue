@@ -1,6 +1,6 @@
 <template>
     <div class="audio-wrapper">
-        <audio ref="audio" @canplay="handleCanPlayMusic" @stalled="handleErrorMusic">
+        <audio ref="audio" @canplay="handleCanPlayMusic" @stalled="handleErrorMusic" loop>
             <template v-if="src && src.length">
                 <source
                     @error="handleErrorMusic(idx)"
@@ -22,7 +22,8 @@ import {
     TRUSIFY_MUSIC_LOAD_STATUS,
     PAUSE_MUSIC,
     CHANGE_CURRENT_MUSIC_SOURCE,
-    SPLICE_CURRENT_MUSIC_SOURCE
+    SPLICE_CURRENT_MUSIC_SOURCE,
+    PLAY_MUSIC
 } from '@/store/types';
 
 @Component
@@ -68,6 +69,8 @@ export default class Audio extends Mixins(StoreMixin) {
             (value, oldValue) => {
                 // 切换歌曲文件时,将canplay状态置为false
                 this.music_m[FALSIFY_MUSIC_LOAD_STATUS]();
+                // 手动刷新audio对象
+                (this.$refs['audio'] as HTMLAudioElement).load();
                 this.$toast('音频加载中, 加载完成后播放...', 'info');
             },
             {
@@ -75,12 +78,14 @@ export default class Audio extends Mixins(StoreMixin) {
             }
         );
     }
+    // canplay会触发说明curMusic发生变化, 而点击播放草会发生变化
     public handleCanPlayMusic() {
         console.log('canplay');
         this.music_m[TRUSIFY_MUSIC_LOAD_STATUS]();
-        if (this.music_m.play) {
-            (this.$refs['audio'] as HTMLAudioElement).play();
-        }
+        // if (this.music_m.play) {
+        this.music_m[PLAY_MUSIC]();
+        (this.$refs['audio'] as HTMLAudioElement).play();
+        // }
     }
     public async handleErrorMusic(index: number) {
         if (index === this.music_m.curMusicInfo.urls.length - 1) {

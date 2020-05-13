@@ -130,18 +130,23 @@ export default class ALL extends Mixins(StoreMixin) {
 
     public async created() {
         try {
-            this.$store.watch(
-                (state) => state.music.loaded,
-                (value, oldValue) => {
-                    if (value) {
-                        // infinite rotate 这里点击之后这个动画就一直在, 只是通过控制running/paused, 所以只需要置为true
-                        this.spin = true;
-                    }
-                }
-            );
+            // this.$store.watch(
+            //     (state) => state.music.,
+            //     (value, oldValue) => {
+            //         if (value) {
+            //             // infinite rotate 这里点击之后这个动画就一直在, 只是通过控制running/paused, 所以只需要置为true
+            //             this.spin = true;
+            //         }
+            //     }
+            // );
             const { code, message, info } = await this.$axios.getTopViewArticles();
             if (code === 0) {
                 this.topView = info;
+                // spin or not
+                const musicArticle = info.filter((article: any) => article.music_info)[0];
+                if (this.music_m.play && this.music_m.relatedArticleId === musicArticle._id) {
+                    this.spin = true;
+                }
                 return;
             }
             throw Error(message);
@@ -155,12 +160,13 @@ export default class ALL extends Mixins(StoreMixin) {
     }
     public handlePlayMusic(top: any) {
         const { music_info, _id }: { music_info: any; _id: string } = top;
-        this.music_m[SET_RELATED_ARTICLE_ID](_id);
         if (music_info && music_info.urls && music_info.urls.length > 0) {
-            if (!this.music_m.play) {
-                music_info.urls = music_info.urls.slice(0, 1);
+            if (this.music_m.relatedArticleId !== top._id) {
+                this.music_m[SET_RELATED_ARTICLE_ID](_id);
                 // 设置音频url
                 this.music_m[CHANGE_CURRENT_MUSIC_INFO](music_info);
+            }
+            if (!this.music_m.play) {
                 // 播放
                 this.music_m[PLAY_MUSIC]();
                 // 运行animation
@@ -232,14 +238,14 @@ export default class ALL extends Mixins(StoreMixin) {
                     @include forcedCenter(absolute);
                     background-color: $light-black;
                     color: $white;
-                    font-size: $larger-fontsize;
+                    font-size: $normal-fontsize;
                     justify-content: center;
                     align-items: center;
                     span {
                         position: relative;
                         max-width: 80%;
                         line-height: $more-larger-fontsize;
-                        max-height: calc(#{$more-larger-fontsize} * 3);
+                        max-height: calc(#{$more-larger-fontsize} * 5);
                         word-wrap: break-word;
                         word-break: break-all;
                         overflow: hidden;

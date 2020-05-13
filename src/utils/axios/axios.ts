@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import CryptoJS from 'crypto-js';
 import * as qiniu from 'qiniu-js';
+import { filterXSS } from 'xss';
 import config from '@/config/config.defaults';
 import utils from '../util/util';
 import router from '@/router/permission';
@@ -260,6 +261,48 @@ export class Request {
         const { data } = await this.instance.post('/app/me/article/removeSubscribeAuthor', {
             id,
             author_id
+        });
+        return data;
+    }
+    public async addArticleViews(id: string) {
+        const { data } = await this.instance.get('/app/me/article/addArticleViews', {
+            params: {
+                id,
+                noauth: 1
+            }
+        });
+        return data;
+    }
+    public async publishComment(id: string, article_id: string, comment: string, type: string) {
+        const { data } = await this.instance.post('/app/me/article/publishComment', {
+            id,
+            article_id,
+            comment: filterXSS(comment),
+            type
+        });
+        return data;
+    }
+    public async deleteComment(comment_id: string, article_id: string, type: string) {
+        const { data } = await this.instance.post('/app/me/article/deleteComment', {
+            comment_id,
+            article_id,
+            type
+        });
+        return data;
+    }
+    public async likeComment(id: string, comment_id: string, type: string) {
+        const { data } = await this.instance.post('/app/me/article/likeComment', {
+            id,
+            comment_id,
+            type
+        });
+        return data;
+    }
+    public async removeLikeComment(id: string, comment_id: string, type: string) {
+        const { data } = await this.instance.post('/app/me/article/removeLikeComment', {
+            id,
+            comment_id,
+            type
         });
         return data;
     }

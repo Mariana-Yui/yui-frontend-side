@@ -22,9 +22,9 @@
                     <i
                         class="article-likes"
                         :class="{ 'like-active': isLikeActive }"
-                        @click="handleLikeArticle"
+                        @click.stop="handleLikeArticle"
                     ></i>
-                    <span class.stop="likes">{{ article.likes && article.likes.length }}</span>
+                    <span class="likes">{{ article.likes && article.likes.length }}</span>
                 </div>
             </div>
         </div>

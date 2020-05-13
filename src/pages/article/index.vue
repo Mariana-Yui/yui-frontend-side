@@ -1,6 +1,6 @@
 <template>
     <div class="article-content-wrapper">
-        <article-header :article="article"></article-header>
+        <article-header ref="article-header" :article="article"></article-header>
         <article class="main">
             <span class="title">{{ article.title }}</span>
             <span class="author"
@@ -8,7 +8,11 @@
                     article.author
                 }}</span
             >
-            <div class="cover" :style="{ 'background-image': `url(${article.cover_img})` }"></div>
+            <div class="cover" :style="{ 'background-image': `url(${article.cover_img})` }">
+                <div class="player-wrapper" v-if="article.type === 'music'">
+                    <me-player :article="article"></me-player>
+                </div>
+            </div>
             <div class="content" v-html="article.content"></div>
         </article>
         <div class="author-wrapper">
@@ -35,7 +39,34 @@
         </div>
         <div class="comment-wrapper" v-if="article.comment">
             <div class="comment-header header">评论</div>
-            <div class="comment" v-if="article.comment.length"></div>
+            <div class="has-comment" v-if="article.comment.length">
+                <div class="comment" v-for="comment in article.comment" :key="comment._id">
+                    <div class="speaker-line">
+                        <div
+                            class="speaker-avatar avatar"
+                            :style="{ 'background-image': `url(${comment.user_id.avatar})` }"
+                        ></div>
+                        <span class="speaker-name">{{ comment.user_id.username }}</span>
+                        <span class="speaker-publish-time">{{ comment.user_id.create_time }}</span>
+                    </div>
+                    <div class="comment-content">{{ comment.content }}</div>
+                    <div class="bottom-line">
+                        <span
+                            class="delete"
+                            v-if="comment.user_id._id === myId"
+                            @click="handleDeleteComment(comment)"
+                        >
+                            删除
+                        </span>
+                        <i
+                            class="like"
+                            :class="{ 'is-active': comment.likes.indexOf(myId) > -1 }"
+                            @click="handleLikeComment(comment)"
+                        ></i>
+                        <span class="like-number">{{ comment.likes.length }}</span>
+                    </div>
+                </div>
+            </div>
             <div class="no-comment" v-else>文章还没有人评论</div>
         </div>
         <div class="bottom-comment-input">
@@ -48,6 +79,7 @@
 <script lang="ts">
 import { Component, Vue, Mixins } from 'vue-property-decorator';
 import ArticleHeader from '@/components/logoHeader/article.vue';
+import MePlayer from '@/components/meplayer/index.vue';
 import StoreMixin from '@/mixin/store-mixin';
 
 interface Article {
@@ -67,11 +99,15 @@ interface Article {
     film_info?: any;
     broadcast?: string;
     type?: string;
+    comment?: Array<any>;
+    likes?: Array<string>;
+    collects?: Array<string>;
 }
 
 @Component({
     components: {
-        ArticleHeader
+        ArticleHeader,
+        MePlayer
     }
 })
 export default class Main extends Mixins(StoreMixin) {
@@ -94,12 +130,13 @@ export default class Main extends Mixins(StoreMixin) {
     }
 
     public async created() {
-        console.log('created');
         try {
             if (typeof this.id === 'string') {
+                await this.$axios.addArticleViews(this.id);
                 const { code, message, info } = await this.$axios.getArticleContent(this.id);
                 if (code === 0) {
                     this.article = info;
+                    this.setArticleHeader();
                     return;
                 }
                 throw Error(message);
@@ -108,10 +145,19 @@ export default class Main extends Mixins(StoreMixin) {
             this.$toast(error.message, 'error');
         }
     }
-
+    public setArticleHeader() {
+        if (this.article.likes && this.article.collects) {
+            if (this.article.likes.includes(this.myId)) {
+                (this.$refs['article-header'] as any).isLikeActive = true;
+            }
+            if (this.article.collects.includes(this.myId)) {
+                (this.$refs['article-header'] as any).isCollectionActive = true;
+            }
+        }
+    }
     public async handleSubscribe() {
         try {
-            const { code } = await this.$axios.getToken();
+            const { code, message } = await this.$axios.getToken();
             if (code === 0) {
                 if (!this.isSubscribe) {
                     // 关注
@@ -154,20 +200,112 @@ export default class Main extends Mixins(StoreMixin) {
                         this.$toast(error.message, 'error');
                     }
                 }
+            } else {
+                throw Error(message);
             }
         } catch (error) {
-            this.$router.push({ path: '/guide', query: { redirect: '/subscribe' } });
+            this.$toast('需要登录操作~', 'info');
+            this.$router.push({ path: '/guide', query: { redirect: 'subscribe' } });
         }
     }
     public handleGotoHomePage() {
         this.article.author_info &&
             this.$router.push({ name: 'UserSpace', params: { id: this.article.author_info._id } });
     }
-    public async handlePublishComment() {}
+    public async handlePublishComment() {
+        if (this.comment !== '') {
+            try {
+                const { code, message } = await this.$axios.getToken();
+                if (code === 0) {
+                    const { code, message, info } = await this.$axios.publishComment(
+                        this.myId,
+                        this.article._id as string,
+                        this.comment,
+                        this.article.type as string
+                    );
+                    if (code === 0 && this.article.comment) {
+                        this.article.comment.push(info);
+                        this.comment = '';
+                    }
+                } else {
+                    this.comment = '';
+                    throw Error('not login');
+                }
+            } catch (error) {
+                if (error.message === 'not login') {
+                    this.$toast('需要登录操作~', 'info');
+                    this.$router.push({ path: '/guide', query: { redirect: 'comment' } });
+                }
+            }
+        }
+    }
+    public async handleDeleteComment(comment: { likes: Array<string>; _id: string }) {
+        try {
+            const { code, message } = await this.$axios.deleteComment(
+                comment._id,
+                this.article._id as string,
+                this.article.type as string
+            );
+            if (code === 0) {
+                this.$toast('删除评论成功', 'success');
+                if (this.article.comment) {
+                    const index = this.article.comment.indexOf(comment);
+                    if (index > -1) {
+                        this.article.comment.splice(index, 1);
+                    }
+                }
+                return;
+            }
+            throw Error(message);
+        } catch (error) {
+            this.$toast(error.message, 'error');
+        }
+    }
+    public async handleLikeComment(comment: { likes: Array<string>; _id: string }) {
+        try {
+            const { code, message } = await this.$axios.getToken();
+            if (code === 0) {
+                if (comment.likes.indexOf(this.myId) === -1) {
+                    // 点赞
+                    const { code, message } = await this.$axios.likeComment(
+                        this.myId,
+                        comment._id,
+                        this.article.type as string
+                    );
+                    if (code === 0 && this.article.comment) {
+                        comment.likes.push(this.myId);
+                        return;
+                    }
+                    throw Error(message);
+                } else {
+                    // 取消点赞
+                    const { code, message } = await this.$axios.removeLikeComment(
+                        this.myId,
+                        comment._id,
+                        this.article.type as string
+                    );
+                    if (code === 0 && this.article.comment) {
+                        const index = comment.likes.indexOf(this.myId);
+                        index > -1 && comment.likes.splice(index, 1);
+                        return;
+                    }
+                    throw Error(message);
+                }
+            } else {
+                throw Error('not login');
+            }
+        } catch (error) {
+            if (error.message === 'not login') {
+                this.$toast('需要登录操作~', 'info');
+                this.$router.push({ path: '/guide', query: { redirect: 'comment' } });
+            }
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>
 @import '~@/assets/css/default.scss';
+@import '~@/assets/css/mixin.scss';
 
 .article-content-wrapper {
     min-height: 100vh;
@@ -220,12 +358,17 @@ export default class Main extends Mixins(StoreMixin) {
             font-size: $more-smaller-fontsize;
         }
         .cover {
+            position: relative;
             height: calc(375px / 2);
             margin-bottom: 20px;
             border-radius: 5px;
             background-repeat: no-repeat;
             background-size: cover;
             background-position-x: 50%;
+            /* 播放器 */
+            .player-wrapper {
+                @include center();
+            }
         }
         .content {
             padding-bottom: 10px;
@@ -305,6 +448,57 @@ export default class Main extends Mixins(StoreMixin) {
         .no-comment {
             padding-top: 40px;
             text-align: center;
+        }
+        .has-comment {
+            .comment {
+                margin-top: 20px;
+                .speaker-line {
+                    display: flex;
+                    align-items: center;
+                    .speaker-avatar {
+                        width: 35px;
+                        height: 35px;
+                    }
+                    .speaker-name {
+                        padding: 10px;
+                        font-size: $article-fontsize;
+                        font-weight: 350;
+                        flex: 1;
+                    }
+                    .speaker-publish-time {
+                        font-size: $smaller-fontsize;
+                    }
+                }
+                .comment-content {
+                    padding: 20px 30px;
+                    line-height: $more-larger-fontsize;
+                }
+                .bottom-line {
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                    .delete {
+                        color: rgba(0, 0, 255, 0.7);
+                        text-decoration: underline;
+                    }
+                    i.like {
+                        margin-left: 10px;
+                        width: $normal-fontsize;
+                        height: $normal-fontsize;
+                        background-image: url('~@/assets/img/yui/like.png');
+                        background-size: contain;
+                        background-position: 50%;
+                        background-repeat: no-repeat;
+                        &.is-active {
+                            background-image: url('~@/assets/img/yui/like-active.png');
+                        }
+                    }
+                    span {
+                        margin-left: 3px;
+                        font-size: $more-smaller-fontsize;
+                    }
+                }
+            }
         }
     }
 }

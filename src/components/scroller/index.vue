@@ -12,7 +12,7 @@
             <slot></slot>
         </template>
         <template v-slot:infinite-spinner>
-            <loading-wave></loading-wave>
+            <loading-wave class="js-wave"></loading-wave>
         </template>
     </scroller>
 </template>

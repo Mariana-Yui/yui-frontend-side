@@ -16,9 +16,10 @@
 <script lang="ts">
 import { Component, Vue, Mixins } from 'vue-property-decorator';
 import ArticleMixin from '@/mixin/article-mixin';
+import StoreMixin from '@/mixin/store-mixin';
 
 @Component
-export default class ArticleHeader extends Mixins(ArticleMixin) {
+export default class ArticleHeader extends Mixins(ArticleMixin, StoreMixin) {
     public handleGotoBack() {
         this.$router.go(-1);
     }

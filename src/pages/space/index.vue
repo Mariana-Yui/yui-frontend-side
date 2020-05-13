@@ -13,8 +13,8 @@
                 <div class="user-following">
                     关注{{ self ? '我' : 'TA' }}的<span>{{
                         userInfo.details &&
-                            userInfo.details.following &&
-                            userInfo.details.following.length
+                            userInfo.details.followers &&
+                            userInfo.details.followers.length
                     }}</span>
                 </div>
                 <div
@@ -24,15 +24,20 @@
                 <div class="user-followers">
                     {{ self ? '我' : 'TA' }}关注的<span>{{
                         userInfo.details &&
-                            userInfo.details.followers &&
-                            userInfo.details.followers.length
+                            userInfo.details.following &&
+                            userInfo.details.following.length
                     }}</span>
                 </div>
             </div>
             <div class="username">{{ userInfo.username }}</div>
             <div class="description">{{ userInfo.description }}</div>
-            <div class="subscribe" :class="{ following: isFollowing }" v-if="!self">
-                关注{{ isFollowing ? '中' : '' }}
+            <div
+                class="subscribe"
+                :class="{ following: isSubscribe }"
+                v-if="!self"
+                @click="handleSubscribe"
+            >
+                关注{{ isSubscribe ? '中' : '' }}
             </div>
         </div>
         <div class="user-collection">
@@ -94,7 +99,19 @@ import {} from '@/store/types';
     }
 })
 export default class UserSpace extends Mixins(StoreMixin) {
-    private userInfo = {};
+    private userInfo: {
+        _id: string;
+        details: {
+            following: Array<string>;
+            followers: Array<string>;
+        };
+    } = {
+        _id: '',
+        details: {
+            following: [],
+            followers: []
+        }
+    };
     private gallery = [
         {
             type: 'read',
@@ -117,7 +134,7 @@ export default class UserSpace extends Mixins(StoreMixin) {
             src: require('@/assets/img/space/collect-sound.png')
         }
     ];
-    private isFollowing = false;
+    // private isFollowing = false;
 
     get self() {
         return (
@@ -128,6 +145,18 @@ export default class UserSpace extends Mixins(StoreMixin) {
     get _id() {
         return this.$route.params.id || this.user_m._id || this.$util.getItem('_id');
     }
+    get myId() {
+        return this.user_m._id || this.$util.getItem('_id');
+    }
+    get isSubscribe() {
+        return (
+            this.userInfo &&
+            this.userInfo.details &&
+            Array.isArray(this.userInfo.details.followers) &&
+            this.userInfo.details.followers.includes(this.myId)
+        );
+    }
+
     public async created() {
         if (this._id) {
             try {
@@ -142,9 +171,9 @@ export default class UserSpace extends Mixins(StoreMixin) {
                 } else {
                     throw Error(message);
                 }
-                if (!this.self) {
-                    await this.checkSubscribe();
-                }
+                // if (!this.self) {
+                //     await this.checkSubscribe();
+                // }
             } catch (error) {
                 this.$toast(error.message, 'error');
             }
@@ -152,22 +181,72 @@ export default class UserSpace extends Mixins(StoreMixin) {
             this.$router.replace({ path: '/guide', query: { redirect: 'space' } });
         }
     }
-    public async checkSubscribe() {
-        if (this.user_m.loginStatus) {
-            const { code, message } = await this.$axios.checkSubscribe(
-                this.user_m._id || this.$util.getItem('_id'),
-                this.$route.params.id
-            );
-            if (code === 0) {
-                this.isFollowing = true;
-            }
-        }
-    }
+    // public async checkSubscribe() {
+    //     if (this.user_m.loginStatus) {
+    //         const { code, message } = await this.$axios.checkSubscribe(
+    //             this.user_m._id || this.$util.getItem('_id'),
+    //             this.$route.params.id
+    //         );
+    //         if (code === 0) {
+    //             this.isFollowing = true;
+    //         }
+    //     }
+    // }
     public handleGotoCollectionPage(type: string) {
         this.$router.push({ path: `/collection/${this._id}`, query: { type } });
     }
     public handleGotoProfile() {
         this.$router.push({ path: '/profile', query: { redirect: 'me' } });
+    }
+    public async handleSubscribe() {
+        try {
+            const { code, message } = await this.$axios.getToken();
+            if (code === 0) {
+                if (!this.isSubscribe) {
+                    // 关注
+                    try {
+                        if (this.userInfo && this.userInfo.details) {
+                            const { code, message } = await this.$axios.subscribeAuthor(
+                                this.myId,
+                                this.userInfo._id
+                            );
+                            if (code === 0) {
+                                this.userInfo.details.followers.push(this.myId);
+                                this.$toast(message, 'success');
+                                return;
+                            }
+                            throw Error(message);
+                        }
+                    } catch (error) {
+                        this.$toast(error.message, 'error');
+                    }
+                } else {
+                    // 取消关注
+                    try {
+                        if (this.userInfo && this.userInfo.details) {
+                            const { code, message } = await this.$axios.removeSubscribeAuthor(
+                                this.myId,
+                                this.userInfo._id
+                            );
+                            if (code === 0) {
+                                const index = this.userInfo.details.followers.indexOf(this.myId);
+                                index > -1 && this.userInfo.details.followers.splice(index, 1);
+                                this.$toast(message, 'info');
+                                return;
+                            }
+                            throw Error(message);
+                        }
+                    } catch (error) {
+                        this.$toast(error.message, 'error');
+                    }
+                }
+            } else {
+                throw Error(message);
+            }
+        } catch (error) {
+            this.$toast('需要登录操作~', 'info');
+            this.$router.push({ path: '/guide', query: { redirect: 'subscribe' } });
+        }
     }
 }
 </script>
@@ -234,7 +313,9 @@ export default class UserSpace extends Mixins(StoreMixin) {
             text-align: center;
             font-size: $more-smaller-fontsize;
             line-height: $normal-fontsize;
-            color: $gray;
+            /* color: $gray; */
+            color: $light-white;
+            font-weight: 500;
         }
         .subscribe {
             position: absolute;
