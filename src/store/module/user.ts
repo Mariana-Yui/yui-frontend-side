@@ -40,6 +40,8 @@ export default class UserModule extends VuexModule {
         const { email, password } = account;
         const { code, message, info } = await request.getToken(email, password);
         if (code === 0) {
+            // 登录上报
+            request.reportLocation(info._id);
             this.context.commit(WRITE_INFO_INTO_LOCAL, info);
         }
         return { code, message };

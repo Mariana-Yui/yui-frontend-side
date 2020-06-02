@@ -39,7 +39,18 @@ export default class ReadApp extends Vue {
     }
     public created() {
         this.loading_m[TOGGLE_LOADING_ANIMATION]();
-        window.addEventListener('beforeunload', function(e) {
+        // 上报信息不用await
+        window.addEventListener('load', (e) => {
+            this.$axios.reportViews();
+            if (this.user_m._id || this.$util.getItem('_id')) {
+                this.$axios.reportLocation(this.user_m._id || this.$util.getItem('_id'));
+            }
+        });
+        window.addEventListener('beforeunload', (e) => {
+            this.$axios.reportViews();
+            if (this.user_m._id || this.$util.getItem('_id')) {
+                this.$axios.reportLocation(this.user_m._id || this.$util.getItem('_id'));
+            }
             // eslint-disable-next-line no-useless-escape
             const confirmationMessage = '\o/';
 

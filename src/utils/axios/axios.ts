@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } f
 import CryptoJS from 'crypto-js';
 import * as qiniu from 'qiniu-js';
 import { filterXSS } from 'xss';
+import publicIP from 'public-ip';
 import config from '@/config/config.defaults';
 import utils from '../util/util';
 import router from '@/router/permission';
@@ -305,6 +306,19 @@ export class Request {
             type
         });
         return data;
+    }
+    /********************************ARTICLE********************************************/
+    public async reportLocation(id: string) {
+        const ip = await publicIP.v4({ timeout: 5000 });
+        await this.instance.get('/app/report/reportLocation', {
+            params: {
+                ip,
+                id
+            }
+        });
+    }
+    public async reportViews() {
+        await this.instance.get('/app/report/reportViews');
     }
 }
 
